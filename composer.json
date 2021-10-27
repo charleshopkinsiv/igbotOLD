@@ -1,0 +1,15 @@
+{
+    "name": "charleshopkinsiv/igbot",
+    "description": "A library for automating instagram activities.",
+    "type": "library",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Charles Hopkins",
+            "email": "charleshopkinsiv@gmail.com"
+        }
+    ],
+    "require": {
+        "charleshopkinsiv/core": "1.0.0"
+    }
+}
