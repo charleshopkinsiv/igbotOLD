@@ -1,15 +1,23 @@
 {
     "name": "charleshopkinsiv/igbot",
-    "description": "A library for automating instagram activities.",
-    "type": "library",
-    "version": "1.0.0",
+    "description": "A useful package for automating different Instagram actions.",
+    "license": "MIT",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/charleshopkinsiv/igbot"
+        }
+    ],
     "authors": [
         {
             "name": "Charles Hopkins",
             "email": "charleshopkinsiv@gmail.com"
         }
     ],
-    "require": {
-        "charleshopkinsiv/core": "1.0.0"
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "igbot\\": "vendor/charleshopkinsiv/igbot/src/"
+        }
     }
 }
