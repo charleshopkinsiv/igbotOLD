@@ -50,8 +50,12 @@ class QueueManager
     public function alreadyAdded(Task $Task)
     {
     
+        $QUEUE = [];
+        if(isset($this->QUEUES[$Task->getAccount()->getUsername()]))
+            $QUEUE = $this->QUEUES[$Task->getAccount()->getUsername()]->toArray();
+
         // See if item is already in account queue
-        foreach($this->QUEUES[$Task->getAccount()->getUsername()]->toArray() as $QueueTask) {
+        foreach($QUEUE as $QueueTask) {
 
             if($Task->getType() == $QueueTask->getType()
             && $Task->getDetails() == $QueueTask->getDetails())
@@ -68,6 +72,9 @@ class QueueManager
      */
     public function addTask(Task $Task)
     {
+
+        if(empty($this->QUEUES[$Task->getAccount()->getUsername()]))
+            $this->QUEUES[$Task->getAccount()->getUsername()] = new TaskQueue($Task->getAccount()->getUsername());
 
         $this->QUEUES[$Task->getAccount()->getUsername()]->push($Task);
         $this->Mapper->saveQueues($this->QUEUES);

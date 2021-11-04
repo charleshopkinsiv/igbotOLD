@@ -10,15 +10,20 @@ class TaskLog
 {
 
     private static $instance;
-    public static $log_file = __DIR__ . "/../../../../data/app/task_log.json";
+    public static $log_file = __DIR__ . "/../../../data/task_log.json";
 
     private $LOG;
 
     private function __construct()
     {
 
-        $this->LOG = json_decode(file_get_contents(self::$log_file), 1);
-        $this->LOG = $this->mapByDates($this->LOG);
+        $this->LOG = [];
+
+        if(is_file(self::$log_file)) {
+                
+            $this->LOG = json_decode(file_get_contents(self::$log_file), 1);
+            $this->LOG = $this->mapByDates($this->LOG);
+        }
     }
 
 

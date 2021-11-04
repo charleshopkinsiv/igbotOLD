@@ -12,7 +12,7 @@
 
 namespace igbot\account;
 use \igbot\action\Login;
-use \ch\core\util\webdriver\WebDriverLoader;
+use core\util\webdriver\WebDriverLoader;
 
 use Facebook\WebDriver\Chrome\ChromeDriver;
 use Facebook\WebDriver\WebDriverBy;

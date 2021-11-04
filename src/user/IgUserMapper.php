@@ -1,70 +1,83 @@
 <?php
 
-
-
 namespace igbot\user;
 
 
+class IgUserMapper
+{
 
-class IgUserMapper {
+    private int $limit;
 
-    private $db, $select;
+    public static string $users_file = __DIR__ . "/../../data/users.json";
+    private static string $users_img_dir = __DIR__ . "/../../data/images/users/icons";
 
-    public function __construct() {
+    public function __construct()
+    {
 
-        $this->db = \web\data\Db::loadDb();
-
-        $this->select = "SELECT * FROM users ";
-
-        $this->where = "WHERE 1=1 ";
 
     }
 
-    public function insert(IgUser $user) {
+    public function insert(IgUser $User)
+    {
 
-        $sql = "INSERT IGNORE INTO users 
-                SET username = '" . $user->get('username') . "',
-                    suspect = '" . $user->get('suspect') . "'";
-
-        if($this->db->query($sql)->execute()) {
-
-            $user->set('id', $this->db->lastId());
-
-            return $user;
-
-        }
-
+        $USERS = $this->loadUsersArray();
+        $USERS[$User->getUsername()] = $User->toArray();
+        $this->saveUsers($USERS);
     }
 
+    private function loadUsersArray() : array
+    {
 
-    public function select() {
+        $USERS = [];
 
-        $sql = $this->select . $this->where;
-
-        $USERS = $this->db->query($sql)->resultSet();
+        if(file_exists(self::$users_file))
+            $USERS = (array)json_decode(file_get_contents(self::$users_file), 1);
 
         return $USERS;
-
     }
 
+    private function saveUsers(array $USERS)
+    {
 
-    public function where($stmt) {
-
-        $this->where .= "AND " . $stmt . " ";
-
+        file_put_contents(self::$users_file, json_encode($USERS));
     }
 
+    public function saveUserImage(string $username, $img_binary)
+    {
+        $username_img_dir = self::$users_img_dir . "/" . substr($username, 0, 1);
 
-    public function update($USERS, $col, $val) {
+        if(!file_exists($username_img_dir)) // Create directory if it doesn't exist
+            mkdir($username_img_dir, 0777, true);
 
-        if(!is_array($USERS)) $USERS = [$USERS];
-
-        $sql = "UPDATE users 
-                SET " . $col . " = '" . $val . "' 
-                WHERE username IN ('" . implode("','", $USERS) . "')"; 
-
-        return $this->db->query($sql)->execute();
-
+        file_put_contents($username_img_dir . "/" . $username . ".jpg", $img_binary);
     }
 
+    public function limit(int $limit)
+    {
+
+        $this->limit = $limit;
+    }
+
+    public function getCollection() : IgUserCollection
+    {
+
+        $Collection = new IgUserCollection();
+
+        $USERS = json_decode(file_get_contents(self::$users_file), 1);
+
+        $i = 0;
+        foreach($USERS as $USER) {
+
+            $Collection->add(new IgUser(
+                $USER['username'],
+                $USER['name'],
+                $USER['description']
+            ));
+
+            $i++;
+            if($i >= 20) break;
+        }
+
+        return $Collection;
+    }
 }

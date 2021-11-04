@@ -64,6 +64,9 @@ class ScrapeRoutineManager
 
         foreach($REQ_KEYS as $key) {
 
+            if(!isset($_POST[$key]))
+                throw new \Exception("Missing required input " . $key);
+
             $DATA[$key] = $_POST[$key];
         }
 
@@ -80,7 +83,6 @@ class ScrapeRoutineManager
                 $DATA['status']
             ));
         }
-
         else {
 
             $this->mapper->update(new ScrapeRoutine(
@@ -92,7 +94,7 @@ class ScrapeRoutineManager
                 $DATA['sequence'],
                 $DATA['status']
             ));
-        }
+        } 
     }
 
     /**
@@ -109,9 +111,10 @@ class ScrapeRoutineManager
         // Add the scrapes/tasks from the routines to the queue
         foreach($ROUTINES as $Routine) {
 
-            // If already added skip
+            // If already or inactive added skip
             if($Queue_Manager->alreadyAdded($Routine->getTask())
-            || TaskManager::taskOnLog($Routine->getTask(), self::$FREQUENCIES[$Routine->getFrequency()]))
+            || TaskManager::taskOnLog($Routine->getTask(), self::$FREQUENCIES[$Routine->getFrequency()])
+            || $Routine->getStatus() == "Inactive")
                 continue;
 
             $Queue_Manager->addTask($Routine->getTask());

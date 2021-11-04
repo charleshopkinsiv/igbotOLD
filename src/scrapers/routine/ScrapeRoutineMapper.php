@@ -11,7 +11,7 @@ use \core\super\Mapper;
 class ScrapeRoutineMapper extends Mapper 
 {
 
-    private $stub_file = __DIR__ . "/../../../../../data/stubs/scraperoutines.json";
+    private $routines_file = __DIR__ . "/../../../data/scraperoutines.json";
     private $ROUTINES;
 
     public function fetchAll()
@@ -19,7 +19,8 @@ class ScrapeRoutineMapper extends Mapper
 
         if(empty($this->ROUTINES)) {
 
-            $this->ROUTINES = json_decode(file_get_contents($this->stub_file), 1);
+            if(file_exists($this->routines_file))
+                $this->ROUTINES = json_decode(file_get_contents($this->routines_file), 1);
             if(empty($this->ROUTINES)) $this->ROUTINES = [];
 
             foreach($this->ROUTINES as $key => $acct) {
@@ -44,7 +45,11 @@ class ScrapeRoutineMapper extends Mapper
     public function insert(ScrapeRoutine $Routine)
     {
 
-        $ROUTINES = json_decode(file_get_contents($this->stub_file) ,1);
+        if(file_exists($this->routines_file))
+            $ROUTINES = json_decode(file_get_contents($this->routines_file) ,1);
+        if(empty($ROUTINES))
+            $ROUTINES = [];
+
 
         $ROUTINES[] = [
             'id'            => $this->lastId() + 1,
@@ -56,14 +61,14 @@ class ScrapeRoutineMapper extends Mapper
             'status'        => $Routine->getStatus()
         ];
 
-        file_put_contents($this->stub_file, json_encode($ROUTINES));
+        file_put_contents($this->routines_file, json_encode($ROUTINES));
     }
 
 
     public function update(ScrapeRoutine $Routine)
     {
 
-        $ROUTINES = json_decode(file_get_contents($this->stub_file) ,1);
+        $ROUTINES = json_decode(file_get_contents($this->routines_file) ,1);
 
         // Remove past instance of this routine
         foreach($ROUTINES as $key => $ROUTINE) {
@@ -86,7 +91,7 @@ class ScrapeRoutineMapper extends Mapper
             'status'        => $Routine->getStatus()
         ];
 
-        file_put_contents($this->stub_file, json_encode($ROUTINES));
+        file_put_contents($this->routines_file, json_encode($ROUTINES));
     }
 
 
@@ -97,8 +102,8 @@ class ScrapeRoutineMapper extends Mapper
 
         foreach($this->fetchAll() as $Routine) {
 
-            if($Routine->lastId() > $largest_id)
-                $largest_id = $Routine->lastId();
+            if($Routine->getId() > $largest_id)
+                $largest_id = $Routine->getId();
         }
 
         return $largest_id;

@@ -9,14 +9,19 @@ use \core\super\Mapper;
 class AccountMapper extends Mapper
 {
 
-    private $stub_file = __DIR__ . "/../../../../data/stubs/accounts.json";
+    private $accounts_file = __DIR__ . "/../../data/accounts.json";
 
     public function fetchAll()
     {
 
         $ACCOUNTS = [];
 
-        foreach(json_decode(file_get_contents($this->stub_file) ,1) as $acct) {
+        if(file_exists($this->accounts_file))
+            $DATA = json_decode(file_get_contents($this->accounts_file) ,1);
+        if(empty($DATA)) 
+            $DATA = [];
+
+        foreach($DATA as $acct) {
 
             $ACCOUNTS[] = new Account(
                 $acct['email'],
@@ -34,7 +39,11 @@ class AccountMapper extends Mapper
     public function insert(Account $Account)
     {
 
-        $ACCOUNTS = json_decode(file_get_contents($this->stub_file) ,1);
+        if(is_file($this->accounts_file))
+            $ACCOUNTS = json_decode(file_get_contents($this->accounts_file) ,1);
+        if(empty($ACCOUNTS))
+            $ACCOUNTS = [];
+
 
         $ACCOUNTS[] = [
             'email' => $Account->getEmail(),
@@ -44,7 +53,7 @@ class AccountMapper extends Mapper
             'status' => $Account->getStatus()
         ];
 
-        file_put_contents($this->stub_file, json_encode($ACCOUNTS));
+        file_put_contents($this->accounts_file, json_encode($ACCOUNTS));
     }
 
 

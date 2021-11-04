@@ -41,7 +41,7 @@ class AccountManager
             $DATA['password'],
             $DATA['proxy'],
             $DATA['status']
-        ));
+        )); 
     }
 
 

@@ -14,7 +14,7 @@ use \igbot\account\Account;
 class QueueMapper extends Mapper 
 {
 
-    private $queue_file = __DIR__ . "/../../../../data/app/account_queues.json";
+    private $queue_file = __DIR__ . "/../../data/account_queues.json";
     private $QUEUES = [];
 
     /**
@@ -36,7 +36,10 @@ class QueueMapper extends Mapper
     public function loadQueues(string $account_name = "")
     {
 
-        $DATA = json_decode(file_get_contents($this->queue_file), 1);
+        if(file_exists($this->queue_file))
+            $DATA = json_decode(file_get_contents($this->queue_file), 1);
+        if(empty($DATA))
+            $DATA = [];
 
         // Instantiate a queue for each account and add tasks
         foreach($DATA as $account => $TASKS) {
