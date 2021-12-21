@@ -44,7 +44,7 @@ class Bot {
 
             while($this->keep_running) {
 
-                if(CLI) printf("\tPopulating queue. . .\n\n");
+                if(!empty(CLI)) printf("\tPopulating queue. . .\n\n");
                 $this->QueueManager->populateQueue();
 
                 if(!empty(CLI)) printf("\tHandling tasks. . .\n\n");

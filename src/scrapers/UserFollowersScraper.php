@@ -14,7 +14,7 @@ class UserFollowersScraper extends Scraper {
 
     private $USERS;
 
-    private static $max_users = 10;
+    private static $max_users = 200;
     private static $url_base = "https://www.instagram.com/";
 
     // Follower button

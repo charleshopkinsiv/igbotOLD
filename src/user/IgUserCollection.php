@@ -11,6 +11,6 @@ class IgUserCollection extends Collection
     public function add(IgUser $User)
     {
 
-        $ITEMS[] = $User;
+        $this->ITEMS[] = $User;
     }
 }

@@ -23,6 +23,12 @@ class IgUser {
     public function getDescription() { return $this->description; }
     public function setDescription(string $description) { $this->description = $description; }
 
+    public function getImageUrl() 
+    {
+
+        return "/public/images/users/icons/" . substr($this->getUsername(), 0, 1) . "/" . $this->getUsername() . ".jpg";
+    }
+
     public function toArray() : array
     {
 

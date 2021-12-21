@@ -37,8 +37,8 @@ class QueueManager
 
 
         // Add all tasks from sequences
-        // $Sequence_Manager = new \igbot\sequence\SequenceManager();
-        // $Sequence_Manager->populateQueue();
+        $Sequence_Manager = new \igbot\sequence\SequenceManager();
+        $Sequence_Manager->populateQueue(new self);
     }
 
 

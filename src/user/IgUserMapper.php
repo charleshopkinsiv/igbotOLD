@@ -9,7 +9,7 @@ class IgUserMapper
     private int $limit;
 
     public static string $users_file = __DIR__ . "/../../data/users.json";
-    private static string $users_img_dir = __DIR__ . "/../../data/images/users/icons";
+    private static string $users_img_dir = __DIR__ . "/../../../../../public/images/users/icons";
 
     public function __construct()
     {
@@ -44,7 +44,8 @@ class IgUserMapper
 
     public function saveUserImage(string $username, $img_binary)
     {
-        $username_img_dir = self::$users_img_dir . "/" . substr($username, 0, 1);
+        $username_img_dir = self::userImageDir($username);
+        
 
         if(!file_exists($username_img_dir)) // Create directory if it doesn't exist
             mkdir($username_img_dir, 0777, true);
@@ -75,9 +76,16 @@ class IgUserMapper
             ));
 
             $i++;
-            if($i >= 20) break;
+            if($i >= $this->limit) break;
         }
 
         return $Collection;
+    }
+
+
+    public static function userImageDir(string $username)
+    {
+
+        return self::$users_img_dir . "/" . substr($username, 0, 1);
     }
 }
