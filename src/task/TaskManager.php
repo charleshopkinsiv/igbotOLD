@@ -20,6 +20,7 @@ class TaskManager
     public static function handleTask(Task $Task, AccountDriver $Driver)
     {
 
+        if(!empty(CLI)) printf("\tHandling Task: %s\n\n", get_class($Task));
         return $Task->execute($Driver);
     }
 

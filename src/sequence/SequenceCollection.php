@@ -17,22 +17,25 @@ class SequenceCollection extends Collection
     public function update(Sequence $Sequence)
     {
 
-        foreach($this->ITEMS as $id => $Seq)
+        foreach($this->ITEMS as $id => $Seq) {
             if($Seq->getId() == $Sequence->getId()) {
 
-                $this->ITEMS[$id] = $Seq;
+                $this->ITEMS[$id] = $Sequence;
                 break;
             }
+        }
     }
 
     public function delete(Sequence $Sequence)
     {
 
-        foreach($this->ITEMS as $id => $Seq)
+        foreach($this->ITEMS as $id => $Seq) {
             if($Seq->getId() == $Sequence->getId()) {
 
                 unset($this->ITEMS[$id]);
+                $this->ITEMS = array_values($this->ITEMS);
                 break;
             }
+        }
     }
 }

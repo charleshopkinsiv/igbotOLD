@@ -7,7 +7,7 @@ class IgUser {
 
     private string $username, $name, $description;
 
-    public function __construct($username, $name, $description) {
+    public function __construct($username, $name = "", $description = "") {
 
         $this->username         = $username;
         $this->name             = $name;

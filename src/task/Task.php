@@ -11,14 +11,14 @@ use igbot\account\AccountDriver;
 
 abstract class Task {
 
-    protected $Account, $type, $details;
+    protected $Account;
     protected $task_type;
 
-    public function __construct(Account $Account, string $type, string $details) {
+    public function __construct(Account $Account, string $type = "") {
 
         $this->Account = $Account;
-        $this->type = $type;
-        $this->details = $details;
+        if(!empty($type))
+            $this->task_type = $type;
     }
 
 
@@ -29,25 +29,12 @@ abstract class Task {
     }
 
 
-    public function getType()
-    {
-
-        return $this->type;
-    }
-
-
-    public function getDetails()
-    {
-
-        return $this->details;
-    }
-    
-
     public function getTaskType()
     {
 
         return $this->task_type;
     }
 
-    public abstract function execute(AccountDriver $Driver);
+
+    public abstract function execute(AccountDriver $Driver, string $details = "");
 }

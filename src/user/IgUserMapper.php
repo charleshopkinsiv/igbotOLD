@@ -7,6 +7,7 @@ class IgUserMapper
 {
 
     private int $limit;
+    private int $count;
 
     public static string $users_file = __DIR__ . "/../../data/users.json";
     private static string $users_img_dir = __DIR__ . "/../../../../../public/images/users/icons";
@@ -14,7 +15,7 @@ class IgUserMapper
     public function __construct()
     {
 
-
+        $this->limit = $this->count = 0;
     }
 
     public function insert(IgUser $User)
@@ -64,7 +65,8 @@ class IgUserMapper
 
         $Collection = new IgUserCollection();
 
-        $USERS = json_decode(file_get_contents(self::$users_file), 1);
+        $USERS = $this->loadUsersArray();
+        $this->count = count($USERS);
 
         $i = 0;
         foreach($USERS as $USER) {
@@ -80,6 +82,16 @@ class IgUserMapper
         }
 
         return $Collection;
+    }
+
+
+    public function count() : int
+    {
+
+        if(empty($this->count))
+            $this->count = count($this->loadUsersArray());
+
+        return $this->count;
     }
 
 

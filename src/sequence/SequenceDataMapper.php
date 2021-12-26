@@ -47,17 +47,42 @@ class SequenceDataMapper
     }
 
 
+    public function getById(int $id)
+    {
+
+        foreach($this->fetchAll() as $Sequence) 
+            if($Sequence->getId() == $id)
+                return $Sequence;
+    }
+
+
+    public function deleteById(int $id)
+    {
+
+        $Collection = $this->fetchAll();
+        foreach($Collection as $Sequence) {
+            if($Sequence->getId() == $id) {
+
+                $Collection->delete($Sequence);
+                $this->saveCollection($Collection);
+                break;
+            }
+        }
+    }
+
+
     public function fetchAll() : SequenceCollection
     {
 
         
 
-        if(empty($this->SequenceCollection))
+        if(empty($this->SequenceCollection)) {
             if(is_file(self::$sequence_file))
                 $this->SequenceCollection = unserialize(file_get_contents(self::$sequence_file));
             else
                 $this->SequenceCollection = new SequenceCollection;
-
+        }
+        
         return $this->SequenceCollection;
     }
 

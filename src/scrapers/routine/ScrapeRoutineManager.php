@@ -118,6 +118,7 @@ class ScrapeRoutineManager
                 continue;
 
             $Queue_Manager->addTask($Routine->getTask());
+            if(!empty(CLI)) printf("Adding %s to %s's queue\n\n", get_class($Routine->getTask()), $Routine->getTask()->getAccount->getUsername());
         }
     }
 }

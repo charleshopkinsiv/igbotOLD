@@ -9,6 +9,8 @@ use \Ui\CatalogItem;
 class IgUserManager
 {
 
+    public static int $default_item_limit = 24;
+
     private IgUserMapper $mapper;
 
     public function __construct() 
@@ -34,6 +36,7 @@ class IgUserManager
 
     public function loadCatalog(Ui $Ui) : Catalog
     {
+
         $Collection = $this->getUsersUi($Ui);
         
         foreach($Collection as $User) {
@@ -52,7 +55,14 @@ class IgUserManager
 
         $Collection = new IgUserCollection();
 
-        $this->mapper->limit($Ui->getItemCount());
+        $item_limit = self::$default_item_limit;
+        if(!empty($_POST['item_limit']))
+            $item_limit = $_POST['item_limit'];
+
+        $this->mapper->limit($item_limit);
+        $Ui->setItemLimit($item_limit);
+
+        $Ui->setTotalItemCount($this->mapper->count());
 
         $Collection = $this->mapper->getCollection();
 

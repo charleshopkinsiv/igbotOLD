@@ -30,11 +30,11 @@ class UserFollowersScraper extends Scraper {
     private static $name_child_css = "div > div:nth-of-type(2) > div:nth-of-type(2)";
     private static $user_img_child_css = "img._6q-tv";
     
-    public function execute(AccountDriver $Driver) {
+    public function execute(AccountDriver $Driver, string $details = "") {
 
         $this->USERS    = [];
         $this->Driver   = $Driver;
-        $username       = $this->getDetails();
+        $username       = $details;
         $url            = self::$url_base . $username . "/";
 
 

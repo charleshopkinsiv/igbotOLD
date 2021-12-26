@@ -57,8 +57,11 @@ class QueueManager
         // See if item is already in account queue
         foreach($QUEUE as $QueueTask) {
 
-            if($Task->getType() == $QueueTask->getType()
-            && $Task->getDetails() == $QueueTask->getDetails())
+            if($Task->getTaskType() == $QueueTask->getTaskType()
+            && ($Task->getTaskType() != "Action" 
+                || !$Task->requiresExtraInfo() 
+                || $Task->getExtraInfo() == $QueueTask->getExtraInfo())
+            )
                 return true;
         }
 
