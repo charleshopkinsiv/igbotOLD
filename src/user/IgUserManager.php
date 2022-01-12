@@ -10,6 +10,14 @@ class IgUserManager
 {
 
     public static int $default_item_limit = 24;
+    public static array $SORT_COLUMNS = [
+        "Recent Added" => [
+            "date_created" => "DESC",
+        ],
+        "Oldest Added" => [
+            "date_created" => "ASC",
+        ],
+    ];
 
     private IgUserMapper $mapper;
 
@@ -50,19 +58,32 @@ class IgUserManager
         return $Ui->catalog();
     }
 
+
+    public function getByUsername(string $username)
+    {
+
+        return $this->mapper->getByUsername($username);
+    }
+
+
     public function getUsersUi(Ui $Ui) : IgUserCollection
     {
 
         $Collection = new IgUserCollection();
 
-        $item_limit = self::$default_item_limit;
-        if(!empty($_POST['item_limit']))
+        $item_limit = self::$default_item_limit; // Items per page
+        if(isset($_POST['item_limit']))
             $item_limit = $_POST['item_limit'];
-
-        $this->mapper->limit($item_limit);
         $Ui->setItemLimit($item_limit);
 
-        $Ui->setTotalItemCount($this->mapper->count());
+        $page = 1;
+        if(isset($_POST['page'])) // Page number
+            $page = $_POST['page'];
+        $Ui->setPage($page);
+        $offset = ($page - 1) * $item_limit;
+        $this->mapper->limit($item_limit, $offset);
+
+        $Ui->setTotalItemCount($this->mapper->count()); // Total items for current query
 
         $Collection = $this->mapper->getCollection();
 

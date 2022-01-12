@@ -39,11 +39,11 @@ class AccountDriverManager
     public function loadDriver(Account $Account)
     {
 
-        if(empty($DRIVERS[$Account->getUsername()]))
-            $DRIVERS[$Account->getUsername()] = new AccountDriver($Account, $this);
+        if(empty($this->DRIVERS[$Account->getUsername()]))
+            $this->DRIVERS[$Account->getUsername()] = new AccountDriver($Account, $this);
 
-        $DRIVERS[$Account->getUsername()]->checkLogin();
+        $this->DRIVERS[$Account->getUsername()]->checkLogin();
 
-        return $DRIVERS[$Account->getUsername()];
+        return $this->DRIVERS[$Account->getUsername()];
     }
 }

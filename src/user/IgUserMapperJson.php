@@ -2,10 +2,8 @@
 
 namespace igbot\user;
 
-use \core\super\Mapper;
 
-
-class IgUserMapper extends Mapper
+class IgUserMapperJson
 {
 
     private int $limit;
@@ -16,36 +14,25 @@ class IgUserMapper extends Mapper
 
     public function __construct()
     {
-        $this->table = "users";
-        $this->count = 0;
-        parent::__construct();
-    }
 
+        $this->limit = $this->count = 0;
+    }
 
     public function insert(IgUser $User)
     {
 
-        $sql = "INSERT INTO " . $this->table . 
-                    " SET username = '" . addslashes($User->getUsername()) . "', 
-                        name = '" . addslashes($User->getName()) . "',
-                        description = '" . addslashes($User->getDescription()) . "'";
-        $this->db->query($sql)->execute();
+        $USERS = $this->loadUsersArray();
+        $USERS[$User->getUsername()] = $User->toArray();
+        $this->saveUsers($USERS);
     }
 
-
-    private function loadUsersArray() : array
+    public function loadUsersArray() : array
     {
 
         $USERS = [];
 
-        foreach($this->fetchAll() as $USER) {
-
-            $USERS[] = [
-                'name'          => $USER['name'],
-                'username'      => $USER['username'],
-                'description'   => $USER['description']
-            ];
-        }
+        if(file_exists(self::$users_file))
+            $USERS = (array)json_decode(file_get_contents(self::$users_file), 1);
 
         return $USERS;
     }
@@ -54,8 +41,13 @@ class IgUserMapper extends Mapper
     public function getByUsername(string $username)
     {
 
-        $sql = "SELECT * FROM " . $this->table . " WHERE username = '" . $username . "'";
-        return $this->db->query($sql)->single();
+        foreach($this->loadUsersArray() as $USER)
+            if($USER['username'] == $username)
+                return new IgUser(
+                    $USER['username'],
+                    $USER['name'],
+                    $USER['description']
+                );
     }
 
 
@@ -64,7 +56,6 @@ class IgUserMapper extends Mapper
 
         file_put_contents(self::$users_file, json_encode($USERS));
     }
-
 
     public function saveUserImage(string $username, $img_binary)
     {
@@ -77,6 +68,11 @@ class IgUserMapper extends Mapper
         file_put_contents($username_img_dir . "/" . $username . ".jpg", $img_binary);
     }
 
+    public function limit(int $limit)
+    {
+
+        $this->limit = $limit;
+    }
 
     public function getCollection() : IgUserCollection
     {
@@ -86,6 +82,7 @@ class IgUserMapper extends Mapper
         $USERS = $this->loadUsersArray();
         $this->count = count($USERS);
 
+        $i = 0;
         foreach($USERS as $USER) {
 
             $Collection->add(new IgUser(
@@ -93,9 +90,22 @@ class IgUserMapper extends Mapper
                 $USER['name'],
                 $USER['description']
             ));
+
+            $i++;
+            if($i >= $this->limit) break;
         }
 
         return $Collection;
+    }
+
+
+    public function count() : int
+    {
+
+        if(empty($this->count))
+            $this->count = count($this->loadUsersArray());
+
+        return $this->count;
     }
 
 

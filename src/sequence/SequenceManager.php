@@ -5,6 +5,7 @@ namespace igbot\sequence;
 use \igbot\queue\QueueManager;
 use \igbot\account\AccountMapper;
 use \igbot\ActionManager;
+use \igbot\user\IgUserManager;
 
 
 class SequenceManager
@@ -138,16 +139,22 @@ class SequenceManager
         $DATA = [];
         $_POST = json_decode(file_get_contents("php://input"), 1);
 
-        foreach($REQ_KEYS as $key)
+        foreach($REQ_KEYS as $key) {
             if(!isset($_POST[$key])) {
 
                 throw new \Exception("Missing required input " . $key);
-                $DATA[$key] = $_POST[$key];
             }
+
+            $DATA[$key] = $_POST[$key];
+        }
 
         $Sequence = $this->Mapper->getById($DATA['id']);
 
+        $UserManager = new IgUserManager();
+
         foreach($DATA['USERS'] as $username) 
-            $Sequence->addUser($username);
+            $Sequence->addUser($UserManager->getByUsername($username));
+
+        $this->Mapper->update($Sequence);
     }
 }

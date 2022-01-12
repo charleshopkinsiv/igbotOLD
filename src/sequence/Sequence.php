@@ -5,6 +5,7 @@ namespace igbot\sequence;
 use \igbot\account\Account;
 use action\SequenceActionCollection;
 use \igbot\user\IgUserCollection;
+use \igbot\user\IgUser;
 use \igbot\actions\Action;
 
 
@@ -58,6 +59,33 @@ class Sequence
     {
 
         return $this->status;
+    }
+
+
+    public function getActionCount() : int
+    {
+
+        return count($this->ACTIONS);
+    }
+
+
+    public function getDuration() : int
+    {
+
+        $duration = !empty($this->ACTIONS) ? array_key_last($this->ACTIONS) : 0;
+        return $duration;
+    }
+
+
+    public function getUserCount() : int
+    {
+
+        $user_count = 0;
+        foreach($this->USERS as $USER_LIST)
+            foreach($USER_LIST as $User)
+                $user_count++;
+
+        return $user_count;
     }
 
 

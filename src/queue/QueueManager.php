@@ -57,7 +57,7 @@ class QueueManager
         // See if item is already in account queue
         foreach($QUEUE as $QueueTask) {
 
-            if($Task->getTaskType() == $QueueTask->getTaskType()
+            if(get_class($Task) == get_class($QueueTask)
             && ($Task->getTaskType() != "Action" 
                 || !$Task->requiresExtraInfo() 
                 || $Task->getExtraInfo() == $QueueTask->getExtraInfo())
@@ -102,21 +102,18 @@ class QueueManager
 
             // Loop through all tasks for Accounts
             foreach($Queue->toArray() as $Task) {
-
-                // Verify account hasn't hit send limit
-                if(TaskManager::handleTask($Task, $Driver)) {
-                 
-                    $this->QUEUES[$account]->pop($Task);
-                    $this->Mapper->saveQueues($this->QUEUES);
-                }
+                
+                TaskManager::handleTask($Task, $Driver);
+                $this->QUEUES[$account]->pop($Task);
+                $this->Mapper->saveQueues($this->QUEUES);
             }
         }
     }
 
-    public function getAccountsQueue(Account $Account)
+    public function getAccountQueues()
     {
 
-        return $this->Mapper->getAccountQueue($Account);
+        return $this->Mapper->getAccountQueues();
     }
 
     /**

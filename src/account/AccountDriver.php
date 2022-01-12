@@ -29,7 +29,7 @@ class AccountDriver
 
     private Account $Account;
     private ChromeDriver $WebDriver;
-    private AccountLimiter $AccountLimiter;
+    private AccountLimiter $Limiter;
 
     private static string $data_folder = __DIR__ . "/../../data";
     public static string $default_home_url = "https://www.instagram.com/";
@@ -37,10 +37,11 @@ class AccountDriver
     public function __construct(Account $Account, AccountDriverManager $DriverManager)
     {
 
-        $this->login_retries    = 4;
-        $this->Account          = $Account;
-        $this->home_url         = self::$default_home_url;
-        $this->debug            = true;
+        $this->login_retries            = 4;
+        $this->Account                  = $Account;
+        $this->Limiter                  = new AccountLimiter($this->Account);
+        $this->home_url                 = self::$default_home_url;
+        $this->debug                    = true;
 
         // Check to see if valid past driver was stored
         $this->data_file = self::$data_folder . "/account_drivers/" . md5($Account->getUsername());
@@ -53,11 +54,11 @@ class AccountDriver
     public function __destruct()
     {
 
-        if(!empty($this->WebDriver)) {
+        // if(!empty($this->WebDriver)) {
             
-            $this->webDriver()->close();
-            unset($this->WebDriver);
-        }
+        //     $this->webDriver()->quit();
+        //     unset($this->WebDriver);
+        // }
         
         $this->saveState();
     }
@@ -65,6 +66,7 @@ class AccountDriver
     public function saveState()
     {
 
+        unset($this->WebDriver);
         file_put_contents( // Save the object state
         $this->data_file,
         serialize($this));
@@ -77,6 +79,8 @@ class AccountDriver
     }
 
     public function getDebug() : bool { return $this->debug; }
+
+    public function getLimiter() : AccountLimiter { return $this->Limiter; }
 
     public function webDriver()
     {
@@ -91,9 +95,9 @@ class AccountDriver
 
     public function checkLogin() // Will attempt to log in x # of times
     {
-
+        
         while(!AccountDriverUtil::checkLogin($this)) {
-
+            if(!empty(CLI)) printf("Logging in\n\n");
             AccountDriverUtil::login($this);
             
             if(empty($counter)) $counter =  1; 

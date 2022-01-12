@@ -31,8 +31,10 @@ class TaskQueue
 
     public function peek()
     {
-
-        return $this->QUEUE[end(array_keys($this->QUEUE))];
+        if(empty($QUEUE))
+            return 0;
+        else
+            return $this->QUEUE[end(array_keys($this->QUEUE))];
     }
 
 

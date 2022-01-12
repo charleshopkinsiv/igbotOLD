@@ -50,7 +50,7 @@ class Bot {
                 if(!empty(CLI)) printf("\tHandling tasks. . .\n\n");
                 $this->QueueManager->handleAccountTasks();
                 
-                $sleep_time = mt_rand(1800, 7200);
+                $sleep_time = mt_rand(5, 20);
                 if(!empty(CLI)) printf("\tSleeping for %s seconds\n\n", $sleep_time);
                 sleep($sleep_time);
             }

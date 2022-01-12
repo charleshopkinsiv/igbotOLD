@@ -20,8 +20,12 @@ class TaskManager
     public static function handleTask(Task $Task, AccountDriver $Driver)
     {
 
-        if(!empty(CLI)) printf("\tHandling Task: %s\n\n", get_class($Task));
-        return $Task->execute($Driver);
+        if($Driver->getLimiter()->overLimit())
+            return;
+
+        if(!empty(CLI)) printf("\tHandling Task: %s - %s\n\n", get_class($Task), $Task->getDetails());
+        // $Task->execute($Driver);
+        self::logTask($Task);
     }
 
 
@@ -43,11 +47,17 @@ class TaskManager
         // Instantiate the class
         $task = new $class(
             \igbot\MapperFactory::getAccountMapper()->getByUsername($account),
-            $TASK_DATA['type'],
             $TASK_DATA['details']
         );
 
         return $task;
+    }
+
+
+    public static function logTask(Task $task)
+    {
+
+        TaskLog::i()->logTask($task);
     }
 
 

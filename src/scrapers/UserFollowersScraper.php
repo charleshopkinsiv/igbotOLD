@@ -34,7 +34,7 @@ class UserFollowersScraper extends Scraper {
 
         $this->USERS    = [];
         $this->Driver   = $Driver;
-        $username       = $details;
+        $username       = $this->details;
         $url            = self::$url_base . $username . "/";
 
 
@@ -68,10 +68,8 @@ class UserFollowersScraper extends Scraper {
         }
 
         // Process Users
-        if(!empty(count($USERS))) {
-
+        if(!empty(count($USERS)))
             $this->saveUsers($USERS);
-        }
     }
 
 

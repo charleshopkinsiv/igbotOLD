@@ -10,7 +10,7 @@ class TaskLog
 {
 
     private static $instance;
-    public static $log_file = __DIR__ . "/../../../data/task_log.json";
+    public static $log_file = __DIR__ . "/../../data/task_log.json";
 
     private $LOG;
 
@@ -22,7 +22,10 @@ class TaskLog
         if(is_file(self::$log_file)) {
                 
             $this->LOG = json_decode(file_get_contents(self::$log_file), 1);
-            $this->LOG = $this->mapByDates($this->LOG);
+        }
+        else {
+
+            $this->LOG = [];
         }
     }
 
@@ -39,6 +42,18 @@ class TaskLog
         return $instance;
     }
 
+
+    public function logTask(Task $task)
+    {
+
+        $this->LOG[date("Y-m-d")][] = [
+            'account'   => $task->getAccount()->getUsername(),
+            'type'      => $task->getTaskType(),
+            'details'   => $task->getDetails()
+        ];
+
+        file_put_contents(self::$log_file, json_encode($this->LOG));
+    }
 
     /**
      * Task Days Back
