@@ -83,6 +83,8 @@ class IgUserManager
         $offset = ($page - 1) * $item_limit;
         $this->mapper->limit($item_limit, $offset);
 
+        $this->mapper->order("date_added");
+
         $Ui->setTotalItemCount($this->mapper->count()); // Total items for current query
 
         $Collection = $this->mapper->getCollection();

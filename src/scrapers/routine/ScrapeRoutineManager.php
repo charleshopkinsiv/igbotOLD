@@ -97,6 +97,22 @@ class ScrapeRoutineManager
         } 
     }
 
+
+    public function deleteRoutineHttp()
+    {
+
+        if(!empty(\core\Registry::instance()->getRequest()->getProperty("patharg")[0])
+        && is_numeric(\core\Registry::instance()->getRequest()->getProperty("patharg")[0])) {
+
+            if($routine = $this->mapper->getById(\core\Registry::instance()->getRequest()->getProperty("patharg")[0])) {
+
+                $this->mapper->delete($routine['id']);
+            }
+
+        }
+    }
+
+
     /**
      * Populate Queue
      * Will load all of the routines, and add them for the account if it hasn't been sent yet
@@ -112,13 +128,23 @@ class ScrapeRoutineManager
         foreach($ROUTINES as $Routine) {
 
             // If already or inactive added skip
-            if($Queue_Manager->alreadyAdded($Routine->getTask())
-            || TaskManager::taskOnLog($Routine->getTask(), self::$FREQUENCIES[$Routine->getFrequency()])
-            || $Routine->getStatus() == "Inactive")
+            if($Routine->getStatus() != "Active" 
+            || $Queue_Manager->alreadyAdded($Routine->getTask())
+            || TaskManager::taskOnLog($Routine->getTask(), self::$FREQUENCIES[$Routine->getFrequency()]))
                 continue;
 
             $Queue_Manager->addTask($Routine->getTask());
-            if(!empty(CLI)) printf("Adding %s to %s's queue\n\n", get_class($Routine->getTask()), $Routine->getTask()->getAccount()->getUsername());
+            $this->debug($Routine);
         }
+    }
+
+    private function debug($Routine)
+    {
+
+        if(!empty(CLI)) 
+            printf("\tAdding %s - %s to %s's queue\n\n", 
+            get_class($Routine->getTask()),
+            $Routine->getTask()->getDetails(),
+            $Routine->getTask()->getAccount()->getUsername());
     }
 }

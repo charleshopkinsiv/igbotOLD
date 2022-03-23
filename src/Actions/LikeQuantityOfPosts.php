@@ -13,7 +13,7 @@ class LikeQuantityOfPosts extends Action
     protected string $action_description = "Will like a certian quantity of posts.";
     protected bool $requires_extra_info = true;
 
-    public function execute(AccountDriver $Driver, string $details = "")
+    public function execute(AccountDriver $Driver)
     {
 
         // AccountDriverUtil::login($Driver);

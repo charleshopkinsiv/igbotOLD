@@ -7,12 +7,15 @@ class IgUser {
 
     private string $username, $name, $description;
 
-    public function __construct($username, $name = "", $description = "") {
+    public function __construct($username, $name = "", $description = "", $scraper = 0) {
 
         $this->username         = $username;
         $this->name             = $name;
         $this->description      = $description;
+        $this->scraper          = $scraper;
     }
+
+    public function getScraper() { return $this->scraper; }
 
     public function getUsername() { return $this->username; }
     public function setUsername(string $username) { $this->username = $username; }

@@ -28,7 +28,8 @@ class IgUserMapper extends Mapper
         $sql = "INSERT INTO " . $this->table . 
                     " SET username = '" . addslashes($User->getUsername()) . "', 
                         name = '" . addslashes($User->getName()) . "',
-                        description = '" . addslashes($User->getDescription()) . "'";
+                        description = '" . addslashes($User->getDescription()) . "',
+                        scraper = " . addslashes($User->getScraper());
         $this->db->query($sql)->execute();
     }
 
@@ -43,7 +44,8 @@ class IgUserMapper extends Mapper
             $USERS[] = [
                 'name'          => $USER['name'],
                 'username'      => $USER['username'],
-                'description'   => $USER['description']
+                'description'   => $USER['description'],
+                'scraper'       => $USER['scraper']
             ];
         }
 
@@ -55,7 +57,15 @@ class IgUserMapper extends Mapper
     {
 
         $sql = "SELECT * FROM " . $this->table . " WHERE username = '" . $username . "'";
-        return $this->db->query($sql)->single();
+        $USER = $this->db->query($sql)->single();
+
+        if(!empty($USER))
+            return new IgUser(
+                $USER['username'],
+                $USER['name'],
+                $USER['description'],
+                $USER['scraper']
+            );
     }
 
 
@@ -91,7 +101,8 @@ class IgUserMapper extends Mapper
             $Collection->add(new IgUser(
                 $USER['username'],
                 $USER['name'],
-                $USER['description']
+                $USER['description'],
+                $USER['scraper']
             ));
         }
 

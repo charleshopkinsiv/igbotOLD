@@ -6,6 +6,7 @@ use \igbot\queue\QueueManager;
 use \igbot\account\AccountMapper;
 use \igbot\ActionManager;
 use \igbot\user\IgUserManager;
+use \igbot\task\TaskManager;
 
 
 class SequenceManager
@@ -31,8 +32,12 @@ class SequenceManager
         foreach($this->Mapper->fetchAll() as $Sequence)
             foreach($Sequence->getTasksDue() as $Task) {
 
-                $Queue_Manager->addTask($Task);
-                if(!empty(CLI)) printf("Adding %s to %s's queue\n\n", $Task->getTitle(), $Sequence->getAccount->getUsername());
+                if(! $Queue_Manager->alreadyAdded($Task)
+                && ! TaskManager::taskOnLog($Task)) {
+
+                    $Queue_Manager->addTask($Task);
+                    if(!empty(CLI)) printf("\t\tAdding %s - %s to %s's queue\n\n", $Task->getTitle(), $Task->getDetails(), $Sequence->getAccount()->getUsername());
+                }
             }
     }
 
@@ -41,6 +46,13 @@ class SequenceManager
     {
 
         return $this->Mapper->fetchAll();
+    }
+
+
+    public function getSequenceById(int $id)
+    {
+
+        return $this->Mapper->getById($id);
     }
 
 
@@ -64,19 +76,29 @@ class SequenceManager
         $Account = new AccountMapper();
         $Account = $Account->getByUsername($DATA['account']);
 
-        $Sequence = new Sequence(
-            empty($DATA['id']) ? $this->Mapper->nextId() : $DATA['id'],
-            $Account
-        );
 
-        
+        if($DATA['id']) {
+
+            $Sequence = $this->getSequenceById($DATA['id']);    
+            $Sequence->setAccount($Account);        
+        }
+        else {
+
+            $Sequence = new Sequence(
+                $this->Mapper->nextId(),
+                $Account
+            );
+        }
+
 
         $ActionManager = new ActionManager();
+
+        $Sequence->clearActions();
 
         if(isset($DATA['ACTIONS']))
             foreach($DATA['ACTIONS'] as $key => $action_name) {
 
-                $Action = $ActionManager->getActionByTitle($action_name);
+                $Action = $ActionManager->getActionByTitle($action_name, $Account);
                 if($Action->requiresExtraInfo())
                     $Action->setExtraInfo(array_shift($DATA['EXTRA_INFO']));
 

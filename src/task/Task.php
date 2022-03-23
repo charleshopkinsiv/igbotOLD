@@ -43,5 +43,5 @@ abstract class Task {
     }
 
 
-    public abstract function execute(AccountDriver $Driver, string $details = "");
+    public abstract function execute(AccountDriver $Driver);
 }

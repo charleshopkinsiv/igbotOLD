@@ -44,10 +44,17 @@ class AccountManager
         )); 
     }
 
+    public function deleteAccountHttp()
+    {
+        
+        if(!empty(\core\Registry::instance()->getRequest()->getProperty("patharg")[0]))
+            $this->mapper->deleteByUsername(\core\Registry::instance()->getRequest()->getProperty("patharg")[0]);
+    }
+
 
     public function getByUsername($username)
     {
-
+        
         return $this->mapper->getByUsername($username);
     }
 }

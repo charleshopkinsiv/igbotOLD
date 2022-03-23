@@ -50,14 +50,14 @@ class Bot {
                 if(!empty(CLI)) printf("\tHandling tasks. . .\n\n");
                 $this->QueueManager->handleAccountTasks();
                 
-                $sleep_time = mt_rand(5, 20);
+                $sleep_time = mt_rand(60, 300);
                 if(!empty(CLI)) printf("\tSleeping for %s seconds\n\n", $sleep_time);
                 sleep($sleep_time);
             }
         }
-        catch(Exception $e) {
+        catch(\Exception $e) {
 
-            // Log $e->getMessage
+            printf("\n\t%s\n\t%s\n\t%s\n\t%s\n", $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
         }
     }
 }

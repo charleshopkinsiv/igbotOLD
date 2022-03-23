@@ -15,8 +15,6 @@ namespace igbot\account;
 class AccountDriverManager
 {
 
-    private array $DRIVERS = [];
-
     private static self $instance;
 
     public function __construct()
@@ -39,11 +37,7 @@ class AccountDriverManager
     public function loadDriver(Account $Account)
     {
 
-        if(empty($this->DRIVERS[$Account->getUsername()]))
-            $this->DRIVERS[$Account->getUsername()] = new AccountDriver($Account, $this);
-
-        $this->DRIVERS[$Account->getUsername()]->checkLogin();
-
-        return $this->DRIVERS[$Account->getUsername()];
+        $driver = new AccountDriver($Account, $this);
+        return $driver;
     }
 }

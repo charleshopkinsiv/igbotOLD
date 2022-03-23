@@ -47,12 +47,15 @@ class ActionManager
     }
 
 
-    public function getActionByTitle(string $title)
+    public function getActionByTitle(string $title, Account $account, string $details = "")
     {
 
         foreach($this->getAllActions() as $Action)
-            if($Action->getTitle() == $title)
-                return $Action;
+            if($Action->getTitle() == $title) {
+
+                $class_name = get_class($Action);
+                return new $class_name($account, $details);
+            }
     }
 }
 

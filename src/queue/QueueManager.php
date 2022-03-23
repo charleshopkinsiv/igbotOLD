@@ -21,6 +21,7 @@ class QueueManager
         $this->Mapper = \igbot\MapperFactory::getQueueMapper();        
         $this->QUEUES = $this->Mapper->getAccountQueues();
         $this->DriverManager = AccountDriverManager::instance();
+
     }
 
 
@@ -28,17 +29,17 @@ class QueueManager
      * Populate Queue
      * Populates the queue for the next 7 days
      */
-    public static function populateQueue() 
+    public function populateQueue() 
     {
 
         // Add all tasks from scrape routines
         $Scrape_Manager = new \igbot\scrapers\routine\ScrapeRoutineManager();
-        $Scrape_Manager->populateQueue(new self);
+        $Scrape_Manager->populateQueue($this);
 
 
         // Add all tasks from sequences
         $Sequence_Manager = new \igbot\sequence\SequenceManager();
-        $Sequence_Manager->populateQueue(new self);
+        $Sequence_Manager->populateQueue($this);
     }
 
 
@@ -58,6 +59,8 @@ class QueueManager
         foreach($QUEUE as $QueueTask) {
 
             if(get_class($Task) == get_class($QueueTask)
+            && $Task->getDetails() == $QueueTask->getDetails()
+            && $Task->getAccount() == $QueueTask->getAccount()
             && ($Task->getTaskType() != "Action" 
                 || !$Task->requiresExtraInfo() 
                 || $Task->getExtraInfo() == $QueueTask->getExtraInfo())
@@ -98,15 +101,20 @@ class QueueManager
         // Loop through all accounts with pending tasks
         foreach($this->QUEUES as $account => $Queue) {
 
-            $Driver = $this->DriverManager->loadDriver($this->AccountManager->getByUsername($account));
+            if($Queue->count() > 0)
+                $Driver = $this->DriverManager->loadDriver($this->AccountManager->getByUsername($account));
 
             // Loop through all tasks for Accounts
-            foreach($Queue->toArray() as $Task) {
-                
-                TaskManager::handleTask($Task, $Driver);
-                $this->QUEUES[$account]->pop($Task);
-                $this->Mapper->saveQueues($this->QUEUES);
+            foreach($Queue->toArray() as $task_i => $Task) {
+
+                if(TaskManager::handleTask($Task, $Driver)) {
+
+                    $this->QUEUES[$account]->dequeue();
+                    $this->Mapper->saveQueues($this->QUEUES);
+                }
             }
+
+            unset($Driver);
         }
     }
 
@@ -116,14 +124,9 @@ class QueueManager
         return $this->Mapper->getAccountQueues();
     }
 
-    /**
-     * Get Accounts With Tasks Due
-     * Will return an array with all of the accounts that have tasks due
-     * 
-     */
-    public function getAccountsWithTasksDue()
+    public function clearQueue()
     {
 
-
+        $this->Mapper->clearQueue();
     }
 }

@@ -10,23 +10,11 @@ class TaskLog
 {
 
     private static $instance;
-    public static $log_file = __DIR__ . "/../../data/task_log.json";
-
-    private $LOG;
 
     private function __construct()
     {
 
-        $this->LOG = [];
-
-        if(is_file(self::$log_file)) {
-                
-            $this->LOG = json_decode(file_get_contents(self::$log_file), 1);
-        }
-        else {
-
-            $this->LOG = [];
-        }
+        $this->db = \core\util\Db::instance();
     }
 
 
@@ -37,59 +25,46 @@ class TaskLog
     {
 
         if(empty(self::$instance)) 
-            $instance = new self();
+            self::$instance = new self();
 
-        return $instance;
+        return self::$instance;
     }
 
 
     public function logTask(Task $task)
     {
 
-        $this->LOG[date("Y-m-d")][] = [
-            'account'   => $task->getAccount()->getUsername(),
-            'type'      => $task->getTaskType(),
-            'details'   => $task->getDetails()
-        ];
 
-        file_put_contents(self::$log_file, json_encode($this->LOG));
+        $sql = "INSERT INTO task_log 
+                SET account = '" . $task->getAccount()->getUsername() . "', 
+                    type = '" . $task->getTaskType() . "',
+                    details = '" . $task->getDetails() . "'";
+        $this->db->query($sql)->execute();
     }
 
     /**
      * Task Days Back
      * Returns true if the task is on the log that many days back
      */
-    public function taskDaysBack(Task $Task, int $days_back = 0)
+    public function taskDaysBack(Task $task, int $days_back = 0)
     {
 
-        // Get Starting Date
-        $starting_date = date("Y-m-d", strtotime("-" . $days_back . " day"));
+        $sql = "SELECT * FROM task_log 
+                WHERE account = '" . $task->getAccount()->getUsername() . "'  
+                    AND type = '" . $task->getTaskType() . "' 
+                    AND details = '" . $task->getDetails() . "' 
+                    AND datetime >= DATE(DATE_SUB(NOW(), INTERVAL " . $days_back . " DAY))";
 
-        // Check all of the logs after the starting date
-        foreach($this->LOG as $date => $LOGS)
-            if(strtotime($date) >= strtotime($starting_date))
-                foreach($LOGS as $LOG)
-                    if($LOG['account'] == $Task->getAccount()->getUsername()
-                    || $LOG['type'] == $Task->getType()
-                    || $LOG['details'] == $Task->getDetails())
-                        return true;
-
-        return false;
+        return $this->db->query($sql)->single();
     }
 
 
-    /**
-     * Map By Dates
-     * Will use dates as keys to create a map of arrays
-     * 
-     */
-    private function mapByDates(array $LOG)
+    public function getRecentItems(int $count = 100)
     {
 
-        $DATE_MAP = [];
-        foreach($LOG as $ENTRY)
-            $DATE_MAP[date("Y-m-d", strtotime($ENTRY['datetime']))][] = $ENTRY;
-
-        return $DATE_MAP;
+        $sql = "SELECT * FROM task_log
+                ORDER BY datetime DESC 
+                LIMIT " . $count;
+        return $this->db->query($sql)->resultSet();
     }
 }

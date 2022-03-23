@@ -19,6 +19,7 @@ class TaskQueue
     {
 
         $this->account = $account;
+        $this->QUEUE   = [];
     }
 
     
@@ -31,17 +32,17 @@ class TaskQueue
 
     public function peek()
     {
-        if(empty($QUEUE))
+        if(empty($this->QUEUE))
             return 0;
         else
             return $this->QUEUE[end(array_keys($this->QUEUE))];
     }
 
 
-    public function pop()
+    public function dequeue()
     {
 
-        return array_pop($this->QUEUE);
+        return array_shift($this->QUEUE);
     }
 
 
@@ -49,6 +50,12 @@ class TaskQueue
     {
         
         return $this->QUEUE;
+    }
+
+    public function count() : int
+    {
+
+        return count($this->QUEUE);
     }
 }
 

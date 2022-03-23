@@ -22,18 +22,17 @@ class UserFollowersScraper extends Scraper {
     private static $followers_modal_css_landmark = "body > div.RnEpo.Yx5HN > div > div > div:nth-child(1) > div > h1";
 
     // User list
-    private static $users_list_scroll_css = "body > div.RnEpo.Yx5HN > div > div > div.isgrP";
+    private static $users_list_scroll_css = "div.isgrP";
     private static $users_css = "ul.jSC57._6xe7A > div.PZuss > li";
 
     // User
-    private static $username_child_css = "span > a.FPmhX";
+    private static $username_child_css = "div > div > span > a > span";
     private static $name_child_css = "div > div:nth-of-type(2) > div:nth-of-type(2)";
     private static $user_img_child_css = "img._6q-tv";
     
-    public function execute(AccountDriver $Driver, string $details = "") {
+    public function execute(AccountDriver $Driver) {
 
         $this->USERS    = [];
-        $this->Driver   = $Driver;
         $username       = $this->details;
         $url            = self::$url_base . $username . "/";
 
@@ -64,12 +63,16 @@ class UserFollowersScraper extends Scraper {
             if($Driver->getDebug()) 
                 printf("\n\tThere are %d users collected so far.\n\n", count($USERS));
 
-            $this->stuckOnTwelveErrorTest($USERS);
+            $this->stuckOnTwelveErrorTest($USERS, $Driver);
         }
 
         // Process Users
+        $this->driver = $Driver;
         if(!empty(count($USERS)))
             $this->saveUsers($USERS);
+
+        unset($this->driver);
+        $Driver->getLimiter()->increment();
     }
 
 
@@ -92,25 +95,35 @@ class UserFollowersScraper extends Scraper {
 
         $UserManager = new IgUserManager();
 
+        if($this->driver->getDebug()) 
+            printf("Saving %s users.", count($USERS));
+
         foreach($USERS as $UserElement) {
 
             $username = $UserElement->findElement(WebDriverBy::cssSelector(self::$username_child_css))->getText();
             $name = $UserElement->findElement(WebDriverBy::cssSelector(self::$name_child_css))->getText();
 
+            if($UserManager->getByUsername($username))
+                continue;
+
             $UserManager->saveUser(new IgUser(
                 $username,
                 $name,
-                ""
+                "",
+
             ));
 
             $UserManager->saveUserImage(
                 $username,
                 $UserElement->findElement(WebDriverBy::cssSelector(self::$user_img_child_css))->getAttribute("src")
             );
+
+            if($this->driver->getDebug()) 
+                printf("%s, ", $username);
         }
     }
 
-    private function stuckOnTwelveErrorTest($USERS)
+    private function stuckOnTwelveErrorTest($USERS, $Driver) // Error when followers don't load
     {
 
         if(count($USERS) == 12) {
@@ -122,7 +135,7 @@ class UserFollowersScraper extends Scraper {
 
             if($this->twelve_count >= 5) {
 
-                $this->Driver->screenshot();
+                $Driver->screenshot();
                 throw new \Exception("Stuck on 12 users, scroll not loading, taking screenshot");
             }
         }

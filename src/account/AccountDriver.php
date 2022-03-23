@@ -12,11 +12,13 @@
 
 namespace igbot\account;
 use \igbot\action\Login;
-use core\util\webdriver\WebDriverLoader;
+use \WebDriverLoader\ChromeDriverLoader;
 
 use Facebook\WebDriver\Chrome\ChromeDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+
+use Exception;
 
 
 class AccountDriver
@@ -34,6 +36,7 @@ class AccountDriver
     private static string $data_folder = __DIR__ . "/../../data";
     public static string $default_home_url = "https://www.instagram.com/";
 
+
     public function __construct(Account $Account, AccountDriverManager $DriverManager)
     {
 
@@ -48,17 +51,16 @@ class AccountDriver
         if(file_exists($this->data_file)
         && unserialize(file_get_contents($this->data_file)) instanceof AccountDriver)
             return unserialize(file_get_contents($this->data_file));
-
     }
 
     public function __destruct()
     {
 
-        // if(!empty($this->WebDriver)) {
+        if(!empty($this->WebDriver)) {
             
-        //     $this->webDriver()->quit();
-        //     unset($this->WebDriver);
-        // }
+            $this->webDriver()->quit();
+            unset($this->WebDriver);
+        }
         
         $this->saveState();
     }
@@ -66,7 +68,12 @@ class AccountDriver
     public function saveState()
     {
 
-        unset($this->WebDriver);
+        if(!empty($this->WebDriver)) {
+
+            $this->WebDriver->close();
+            unset($this->WebDriver);
+        }
+
         file_put_contents( // Save the object state
         $this->data_file,
         serialize($this));
@@ -87,7 +94,7 @@ class AccountDriver
 
         if(empty($this->WebDriver)) {
 
-            $this->WebDriver = WebDriverLoader::load();
+            $this->WebDriver = ChromeDriverLoader::load();
             $this->get($this->home_url);        
         }
         return $this->WebDriver;
@@ -97,7 +104,7 @@ class AccountDriver
     {
         
         while(!AccountDriverUtil::checkLogin($this)) {
-            if(!empty(CLI)) printf("Logging in\n\n");
+            if(true) printf("Logging in - %s\n\n", $this->Account->getUsername());
             AccountDriverUtil::login($this);
             
             if(empty($counter)) $counter =  1; 
@@ -143,19 +150,18 @@ class AccountDriver
     }
 
 
-    public function waitUntilCssSelector(String $css_selector)
+    public function waitUntilCssSelector(String $css_selector, int $timeout_seconds = 30)
     {
 
         try{
 
-            $this->webDriver()->wait()->until(
+            $this->webDriver()->wait($timeout_seconds)->until(
                 WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector($css_selector))
             );        
         }
-        catch(\Exception $e) {
-echo "Title = " . $this->webDriver()->getTitle() . "\n\n" . $e->getMessage() . "\n\n";
-            $this->screenshot();
-            exit('error');
+        catch(Exception $e) {
+
+            $this->screenshot("AccountDriver_waitUntilCssSelector");
         }
     }
 
@@ -168,17 +174,17 @@ echo "Title = " . $this->webDriver()->getTitle() . "\n\n" . $e->getMessage() . "
                 WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::xpath($xpath))
             );        
         }
-        catch(\Exception $e) {
-echo "Title = " . $this->webDriver()->getTitle() . "\n\n" . $e->getMessage() . "\n\n";
-            $this->screenshot();
-            exit('error');
+        catch(Exception $e) {
+
+            $this->screenshot("AccountDriver_waitUntilXpath");
         }
     }
 
 
     public function screenshot(String $name = "screenshot")
     {
-
+        
+        return;
         $this->WebDriver()->takeScreenshot(__DIR__ . "/../../data/screenshots/" . $name . date("Y_m_d_H_i_s") . ".png");
     }
 }

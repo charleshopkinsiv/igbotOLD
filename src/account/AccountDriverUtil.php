@@ -8,6 +8,7 @@
 
 namespace igbot\account;
 
+use Facebook\WebDriver\Exception\DriverServerDiedException;
 
 class AccountDriverUtil
 {
@@ -33,9 +34,12 @@ class AccountDriverUtil
 
             return $Driver->elementCssSelector(self::$logged_in_landmark_css);
         }
+        catch(\Facebook\WebDriver\Exception\DriverServerDiedException $e) {
+
+            exec("pkill chromedriver | pkill chromium-browse");
+        }
         catch(\Exception $e) {
 
-            if(defined(CLI)) printf("Error: %s\n\n", $e->getMessage());
         }
 
         return false;
@@ -52,9 +56,6 @@ class AccountDriverUtil
         $Driver->fillInput(self::$login_form_password_css, $Driver->getAccount()->getPassword());
         $Driver->click(self::$login_form_button_css);
         $Driver->waitUntilCssSelector(self::$logged_in_landmark_css);
-
-        
-        $Driver->screenshot("logged_in");
     }
 
 

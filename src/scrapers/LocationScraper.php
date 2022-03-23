@@ -13,8 +13,9 @@ class LocationScraper extends Scraper {
     private $description = "Gathers users from the location feed";
 
     
-    public function execute(AccountDriver $Driver) {
-
+    public function execute(AccountDriver $Driver) 
+    {
+        
         $this->USERS = [];
 
         //  Required Data
@@ -48,13 +49,11 @@ class LocationScraper extends Scraper {
                 try {
 
                     $ITEMS = $ROW->findElements(WebDriverBy::cssSelector('div.v1Nh3'));
-
-                } catch(\Facebook\WebDriver\Exception\StaleElementReferenceException $e) {
+                } 
+                catch(\Facebook\WebDriver\Exception\StaleElementReferenceException $e) {
 
                     echo $e->getMessage() . "\n\n";
-
                     break;
-
                 }
 
 
@@ -72,9 +71,7 @@ class LocationScraper extends Scraper {
                     } catch(\Facebook\WebDriver\Exception\ElementNotInteractableException $e) {
 
                         echo $e->getMessage() . "\n\n";
-
                         break;
-
                     }
 
 

@@ -65,10 +65,34 @@ class AccountMapper extends Mapper
     public function getByUsername($username)
     {
         
-        foreach($this->fetchAll() as $Account)
-            if($Account->getUsername() == $username) 
+        foreach($this->fetchAll() as $Account) {
+
+            if($Account->getUsername() == $username) {
+
                 return $Account;
+            }
+        }
 
         return false;
+    }
+
+
+    public function deleteByUsername(string $username)
+    {
+        
+        if(is_file($this->accounts_file))
+            $accounts = json_decode(file_get_contents($this->accounts_file) ,1);
+        if(empty($accounts))
+            $accounts = [];
+
+        foreach($accounts as $i => $account) {
+
+            if($account['username'] == $username) {
+
+                unset($accounts[$i]);
+            } 
+        }
+
+        file_put_contents($this->accounts_file, json_encode($accounts));
     }
 }

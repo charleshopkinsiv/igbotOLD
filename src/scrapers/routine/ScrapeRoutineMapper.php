@@ -42,6 +42,24 @@ class ScrapeRoutineMapper extends Mapper
     }
 
 
+    public function getById(int $id)
+    {
+
+        $ROUTINES = json_decode(file_get_contents($this->routines_file) ,1);
+
+        // Remove past instance of this routine
+        foreach($ROUTINES as $key => $ROUTINE) {
+
+            if($ROUTINE['id'] == $id) {
+
+                return $ROUTINE;
+            }
+        }
+
+        return false;
+    }
+
+
     public function insert(ScrapeRoutine $Routine)
     {
 
@@ -90,6 +108,25 @@ class ScrapeRoutineMapper extends Mapper
             'sequence'      => $Routine->getSequence(),
             'status'        => $Routine->getStatus()
         ];
+
+        file_put_contents($this->routines_file, json_encode($ROUTINES));
+    }
+
+
+
+    public function delete(int $id) 
+    {
+
+        $ROUTINES = json_decode(file_get_contents($this->routines_file) ,1);
+
+        // Remove past instance of this routine
+        foreach($ROUTINES as $key => $ROUTINE) {
+
+            if($ROUTINE['id'] == $id) {
+
+                unset($ROUTINES[$key]);
+            }
+        }
 
         file_put_contents($this->routines_file, json_encode($ROUTINES));
     }

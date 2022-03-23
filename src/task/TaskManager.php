@@ -5,6 +5,7 @@
 
 namespace igbot\task;
 use \igbot\account\AccountDriver;
+use \igbot\account\AccountLimiter;
 
 
 class TaskManager
@@ -20,12 +21,29 @@ class TaskManager
     public static function handleTask(Task $Task, AccountDriver $Driver)
     {
 
-        if($Driver->getLimiter()->overLimit())
-            return;
+        try {
 
-        if(!empty(CLI)) printf("\tHandling Task: %s - %s\n\n", get_class($Task), $Task->getDetails());
-        // $Task->execute($Driver);
-        self::logTask($Task);
+            if($Driver->getLimiter()->overLimit($Task))
+                return false;
+
+            if(!empty($Driver->getDebug()))  
+                printf("\tLeft for day: %s | Left for hour: %s\n\n", $Driver->getLimiter()->leftForDay($Task), $Driver->getLimiter()->leftForHour($Task));
+
+            if(!empty($Driver->getDebug())) 
+                printf("\tHandling Task: %s - %s\n\n", $Task->getTaskType(), $Task->getDetails());
+
+            $Driver->checkLogin();
+
+            $Task->execute($Driver);
+            self::logTask($Task);
+
+            return true;
+        }
+
+        catch(\Throwable $e) {
+
+            if(!empty($Driver->getDebug())) printf("\tError: %s\n\n", $e->getMessage());
+        }
     }
 
 

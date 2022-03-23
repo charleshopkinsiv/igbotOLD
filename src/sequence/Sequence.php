@@ -38,6 +38,13 @@ class Sequence
     }
 
 
+    public function setAccount(Account $account)
+    {
+
+        $this->Account = $account;
+    }
+
+
     public function getAccount()
     {
 
@@ -103,20 +110,24 @@ class Sequence
         foreach($this->ACTIONS as $days_from_signup => $Action) 
             $DATES_DUE[date("Y-m-d", strtotime("-" . $days_from_signup . " days"))] = $Action;
 
-        foreach($DATES_DUE as $date => $Action) {
+        foreach($DATES_DUE as $date => $ACTIONS) {
+            foreach($ACTIONS as $Action) {
 
-            if(!empty($this->USERS[$date]))
-                foreach($this->USERS[$date] as $User) {
+                if(!empty($this->USERS[$date])) {
+                    foreach($this->USERS[$date] as $User) {
 
-                    $class_name = get_class($Action);
-                    $NewAction = new $class_name($this->Account);
-                    $NewAction->addUser($User);
-                    if($Action->requiresExtraInfo())
-                        $NewAction->extraInfo($Action->getExtraInfo());
-                    $TASKS_DUE[] = $NewAction;
+                        $class_name = get_class($Action);
+                        $NewAction = new $class_name($this->Account, $User->getUsername());
+
+                        if($Action->requiresExtraInfo())
+                            $NewAction->setExtraInfo($Action->getExtraInfo());
+
+                        $TASKS_DUE[] = $NewAction;
+                    }
                 }
+            }
         }
-
+        
         return $TASKS_DUE;
     }
 
@@ -132,13 +143,51 @@ class Sequence
         $this->USERS[date("Y-m-d")][] = $User;
     }
 
+
+    public function getUsers() : array
+    {
+
+        return $this->USERS;
+    }
+
     
-    public function addAction(int $days_from_signup, Action $Action) {
+    public function addAction(int $days_from_signup, Action $Action) 
+    {
 
         $this->ACTIONS[$days_from_signup][] = $Action;
         ksort($this->ACTIONS);
     }
 
+    public function addActionIfNotAlready(int $days_from_signup, Action $Action) 
+    {
+
+        if(! $this->checkAction($days_from_signup, $Action)) {
+
+            $this->addAction($days_from_signup, $Action);
+        }
+    }
+
+    public function checkAction(int $days_from_signup, Action $Action)
+    {
+
+        foreach($this->ACTIONS as $days_f_su => $ACTS) {
+
+            foreach($ACTS as $act) {
+
+                if(get_class($Action) == get_class($Action)
+                && $Action->getDetails() == $act->getDetails()) {
+
+                    return $Action;
+                }
+            }
+        }
+    }
+
+    public function clearActions()
+    {
+
+        $this->ACTIONS = [];
+    }
 
     public function getActionsByDays()
     {
