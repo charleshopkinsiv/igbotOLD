@@ -1,15 +1,13 @@
 <?php
 
+namespace IgBot;
 
-
-namespace igbot;
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Chrome\ChromeDriver;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
-
 
 
 class Bot {
@@ -32,10 +30,6 @@ class Bot {
     public function run()
     {
 
-        /**
-         * @todo 
-         */
-
         try {
                     
             if(\core\Registry::instance()->getRequest() instanceof \core\requests\CliRequest)
@@ -55,7 +49,7 @@ class Bot {
                 sleep($sleep_time);
             }
         }
-        catch(\Exception $e) {
+        catch(\Exception $e) { // Fatal errors
 
             printf("\n\t%s\n\t%s\n\t%s\n\t%s\n", $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
         }

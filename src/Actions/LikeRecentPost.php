@@ -1,10 +1,10 @@
 <?php
 
 
-namespace igbot\Actions;
+namespace IgBot\Actions;
 
-use igbot\account\AccountDriver;
-use igbot\AccountDriverUtil;
+use \IgBot\Account\AccountDriver;
+use \IgBot\AccountDriverUtil;
 
 class LikeRecentPost extends Action
 {
@@ -21,19 +21,28 @@ class LikeRecentPost extends Action
     {
         $Driver->get(self::$url_base . $this->details . "/");
 
-        $Driver->waitUntilCssSelector(self::$main_image_selector, 5); // Click First Post
-        $Driver->screenshot("recent_post");
-        if($Driver->elementsCssSelector(self::$recent_post_selector)) {
 
-            if($Driver->getDebug())
-                printf("\n\tLiking recent post for user: %s\n", $this->details);
+        try {
 
-            $Driver->click(self::$recent_post_selector);
+            $Driver->waitUntilCssSelector(self::$main_image_selector, 5); // Click First Post
+            $Driver->screenshot("recent_post");
+            if($Driver->elementsCssSelector(self::$recent_post_selector)) {
+    
+                if($Driver->getDebug())
+                    printf("\n\tLiking recent post for user: %s\n", $this->details);
+    
+                $Driver->click(self::$recent_post_selector);
+    
+                $Driver->waitUntilCssSelector(self::$like_btn_selector); // Like First Post
+                $Driver->click(self::$like_btn_selector);
+    
+                $Driver->getLimiter()->increment();
+            }
+        }
 
-            $Driver->waitUntilCssSelector(self::$like_btn_selector); // Like First Post
-            $Driver->click(self::$like_btn_selector);
+        catch(\Exception $e) {
 
-            $Driver->getLimiter()->increment();
+            $Driver->failedTask($this);
         }
     }
 }

@@ -17,7 +17,7 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "igbot\\": "src"
+            "IgBot\\": "src"
         }
     }
 }

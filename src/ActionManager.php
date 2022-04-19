@@ -1,9 +1,9 @@
 <?php
 
 
-namespace igbot;
+namespace IgBot;
 
-use \igbot\account\Account;
+use \IgBot\Account\Account;
 
 
 class ActionManager
@@ -47,15 +47,12 @@ class ActionManager
     }
 
 
-    public function getActionByTitle(string $title, Account $account, string $details = "")
+    public function getActionByTitle(string $title)
     {
 
         foreach($this->getAllActions() as $Action)
-            if($Action->getTitle() == $title) {
-
-                $class_name = get_class($Action);
-                return new $class_name($account, $details);
-            }
+            if($Action->getTitle() == $title)
+                return $Action;
     }
 }
 

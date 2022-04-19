@@ -2,7 +2,7 @@
 
 
 
-namespace igbot;
+namespace IgBot;
 
 
 class MapperFactory
@@ -15,7 +15,7 @@ class MapperFactory
 
         if(empty(self::$accountMapper)) {
 
-            self::$accountMapper = new \igbot\account\AccountMapper();
+            self::$accountMapper = new \IgBot\account\AccountMapper();
         }
 
         return self::$accountMapper;
@@ -26,7 +26,7 @@ class MapperFactory
 
         if(empty(self::$scrapeRoutineMapper)) {
 
-            self::$scrapeRoutineMapper = new \igbot\scrapers\routine\ScrapeRoutineMapper();
+            self::$scrapeRoutineMapper = new \IgBot\scrapers\routine\ScrapeRoutineMapper();
         }
 
         return self::$scrapeRoutineMapper;
@@ -37,7 +37,7 @@ class MapperFactory
 
         if(empty(self::$queueMapper)) {
 
-            self::$queueMapper = new \igbot\queue\QueueMapper();
+            self::$queueMapper = new \IgBot\queue\QueueMapper();
         }
 
         return self::$queueMapper;

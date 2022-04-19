@@ -1,11 +1,11 @@
 <?php
 
 
-namespace igbot\Actions;
+namespace IgBot\Actions;
 
 
-use \igbot\task\Task;
-use \igbot\user\IgUser;
+use \IgBot\Task\Task;
+use \IgBot\User\IgUser;
 
 
 abstract class Action extends Task {
@@ -19,6 +19,16 @@ abstract class Action extends Task {
 
     public function getTitle() { return $this->action_title; }
     public function getDescription() { return $this->action_description; }
+
+
+    public function addUser(IgUser $User)
+    {
+
+        $this->User = $User;
+    }
+
+    public function getUser() { return $this->User; }
+
 
     public function requiresExtraInfo() : bool { return $this->requires_extra_info; }
 

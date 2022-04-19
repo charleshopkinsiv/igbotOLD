@@ -1,9 +1,9 @@
 <?php
 
 
-namespace igbot\Actions;
-use igbot\account\AccountDriver;
-use igbot\AccountDriverUtil;
+namespace IgBot\Actions;
+use \IgBot\Account\AccountDriver;
+use \IgBot\AccountDriverUtil;
 
 class SendMessage extends Action
 {

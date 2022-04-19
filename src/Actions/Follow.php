@@ -1,10 +1,10 @@
 <?php
 
 
-namespace igbot\Actions;
+namespace IgBot\Actions;
 
-use igbot\account\AccountDriver;
-use igbot\AccountDriverUtil;
+use IgBot\Account\AccountDriver;
+use IgBot\AccountDriverUtil;
 
 class Follow extends Action
 {

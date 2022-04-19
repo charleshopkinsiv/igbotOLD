@@ -1,10 +1,10 @@
 <?php
 
 
-namespace igbot\Actions;
+namespace IgBot\Actions;
 
-use igbot\account\AccountDriver;
-use igbot\AccountDriverUtil;
+use \IgBot\Account\AccountDriver;
+use \IgBot\AccountDriverUtil;
 
 class LikeQuantityOfPosts extends Action
 {
@@ -13,7 +13,7 @@ class LikeQuantityOfPosts extends Action
     protected string $action_description = "Will like a certian quantity of posts.";
     protected bool $requires_extra_info = true;
 
-    public function execute(AccountDriver $Driver)
+    public function execute(AccountDriver $Driver, string $details = "")
     {
 
         // AccountDriverUtil::login($Driver);
