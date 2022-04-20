@@ -9,6 +9,10 @@ use \IgBot\Task\TaskManager;
 use \IgBot\Account\Account;
 use \IgBot\Account\AccountManager;
 use \IgBot\Account\AccountDriverManager;
+use \IgBot\MapperFactory;
+use \IgBot\Scrapers\Routine\ScrapeRoutineManager;
+use \IgBot\Sequence\SequenceManager;
+
 
 class QueueManager 
 {
@@ -18,7 +22,7 @@ class QueueManager
     public function __construct()
     {
 
-        $this->Mapper = \IgBot\MapperFactory::getQueueMapper();        
+        $this->Mapper = MapperFactory::getQueueMapper();        
         $this->QUEUES = $this->Mapper->getAccountQueues();
         $this->DriverManager = AccountDriverManager::instance();
 
@@ -33,12 +37,12 @@ class QueueManager
     {
 
         // Add all tasks from scrape routines
-        $Scrape_Manager = new \IgBot\scrapers\routine\ScrapeRoutineManager();
+        $Scrape_Manager = new ScrapeRoutineManager();
         $Scrape_Manager->populateQueue($this);
 
 
         // Add all tasks from sequences
-        $Sequence_Manager = new \IgBot\sequence\SequenceManager();
+        $Sequence_Manager = new SequenceManager();
         $Sequence_Manager->populateQueue($this);
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace IgBot\scrapers;
+namespace IgBot\Scrapers;
 
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;

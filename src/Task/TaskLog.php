@@ -1,9 +1,9 @@
 <?php
 
-
-
 namespace IgBot\Task;
 
+
+use \CharlesHopkinsIV\Core\Util\Db;
 
 
 class TaskLog
@@ -14,7 +14,7 @@ class TaskLog
     private function __construct()
     {
 
-        $this->db = \core\util\Db::instance();
+        $this->db = new Db();
     }
 
 

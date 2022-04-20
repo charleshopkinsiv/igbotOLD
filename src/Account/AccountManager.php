@@ -3,6 +3,7 @@
 
 namespace IgBot\Account;
 
+use \IgBot\MapperFactory;
 
 
 class AccountManager
@@ -13,7 +14,7 @@ class AccountManager
     public function __construct()
     {
 
-        $this->mapper = \igbot\MapperFactory::getAccountMapper();
+        $this->mapper = MapperFactory::getAccountMapper();
     }
 
     public function getAllAccounts()

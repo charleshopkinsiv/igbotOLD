@@ -34,6 +34,8 @@ class QueueMapper extends Mapper
 
         if(file_exists(self::$queue_file))
             return unserialize(file_get_contents(self::$queue_file));
+        else
+            return [];
     }
 
 

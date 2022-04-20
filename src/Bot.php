@@ -8,6 +8,9 @@ use Facebook\WebDriver\Chrome\ChromeDriver;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use \IgBot\Queue\QueueManager;
+use \CharlesHopkinsIV\Core\Registry;
+use \CharlesHopkinsIV\Core\Requests\CliRequest;
 
 
 class Bot {
@@ -18,7 +21,7 @@ class Bot {
 
     public function __construct() {
 
-        $this->QueueManager = new \igbot\queue\QueueManager();
+        $this->QueueManager = new QueueManager();
     }
 
 
@@ -32,7 +35,7 @@ class Bot {
 
         try {
                     
-            if(\core\Registry::instance()->getRequest() instanceof \core\requests\CliRequest)
+            if(Registry::instance()->getRequest() instanceof CliRequest)
                 define("CLI", true);
             else define("CLI", false);
 

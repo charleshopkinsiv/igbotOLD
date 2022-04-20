@@ -10,9 +10,9 @@ class ScraperManager
 {
 
     public static $TYPES = [
-        "User Followers"    => "\\igbot\\scrapers\\UserFollowersScraper",
-        "Location"          => "\\igbot\\scrapers\\LocationScraper",
-        "Location2L"        => "\\igbot\\scrapers\\LocationScraperTwoL"
+        "User Followers"    => "\\IgBot\\Scrapers\\UserFollowersScraper",
+        "Location"          => "\\IgBot\\Scrapers\\LocationScraper",
+        "Location2L"        => "\\IgBot\\Scrapers\\LocationScraperTwoL"
     ];
 
     public function __construct()

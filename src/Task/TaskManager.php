@@ -13,8 +13,8 @@ class TaskManager
 
     // Will provide the correct manager for the task type
     public static $TASK_TYPES = [
-        "Action" => "\\igbot\\action\\ActionManager",
-        "Scrape" => "\\igbot\\scrapers\\ScraperManager",
+        "Action" => "\\IgBot\\Action\\ActionManager",
+        "Scrape" => "\\IgBot\\Scrapers\\ScraperManager",
     ];
 
 

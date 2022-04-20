@@ -1,8 +1,10 @@
 <?php
 
-
-
 namespace IgBot;
+
+use \IgBot\Account\AccountMapper;
+use \IgBot\Scrapers\Routine\ScrapeRoutineMapper;
+use \IgBot\Queue\QueueMapper;
 
 
 class MapperFactory
@@ -15,7 +17,7 @@ class MapperFactory
 
         if(empty(self::$accountMapper)) {
 
-            self::$accountMapper = new \IgBot\account\AccountMapper();
+            self::$accountMapper = new AccountMapper();
         }
 
         return self::$accountMapper;
@@ -26,7 +28,7 @@ class MapperFactory
 
         if(empty(self::$scrapeRoutineMapper)) {
 
-            self::$scrapeRoutineMapper = new \IgBot\scrapers\routine\ScrapeRoutineMapper();
+            self::$scrapeRoutineMapper = new ScrapeRoutineMapper();
         }
 
         return self::$scrapeRoutineMapper;
@@ -37,7 +39,7 @@ class MapperFactory
 
         if(empty(self::$queueMapper)) {
 
-            self::$queueMapper = new \IgBot\queue\QueueMapper();
+            self::$queueMapper = new QueueMapper();
         }
 
         return self::$queueMapper;

@@ -1,6 +1,6 @@
 <?php
 
-namespace IgBot\user;
+namespace IgBot\User;
 
 use \CharlesHopkinsIV\Core\Super\Mapper;
 

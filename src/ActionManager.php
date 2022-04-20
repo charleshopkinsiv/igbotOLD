@@ -11,7 +11,7 @@ class ActionManager
 
     public static string $action_dir = __DIR__ . "/Actions";
     public static string $action_parent_class = "Action.php";
-    public static string $actions_namespace = "\\igbot\\Actions";
+    public static string $actions_namespace = "\\IgBot\\Actions";
     public static array $NON_USER_ACTIONS = ['Account Login'];
 
     private $ACTIONS;
