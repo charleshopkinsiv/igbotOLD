@@ -24,7 +24,7 @@ class UserFollowersScraper extends Scraper {
 
     // User list
     private static $users_list_scroll_css = "div.isgrP";
-    private static $users_css = "ul.jSC57._6xe7A > div.PZuss > li";
+    private static $users_css = "ul > div.PZuss > li";
 
     // User
     private static $username_child_css = "div > div > span > a";
@@ -45,13 +45,23 @@ class UserFollowersScraper extends Scraper {
         // Load Users Page
         $Driver->get($url);
         if($Driver->getDebug()) 
-            printf("\n\tLoading %s\n\n", $url);
+            printf("%32sLoading %s\n", "", $url);
+
+        $Driver->getLimiter()->increment();
 
         // Open followers modal
-        $Driver->waitUntilCssSelector(self::$followers_css_button);
+        try {
+
+            $Driver->waitUntilCssSelector(self::$followers_css_button);
+        }
+        catch(\Exception $e) {
+
+            return;
+        }
+
         $Driver->click(self::$followers_css_button);
         if($Driver->getDebug())
-            printf("\n\t%s Profile loaded.\n\n", $username);
+            printf("%32sProfile loaded.\n", "", $username);
 
         $Driver->waitUntilCssSelector(self::$users_css);
         $USERS = $this->collectUsers($Driver);
@@ -68,7 +78,7 @@ class UserFollowersScraper extends Scraper {
             $this->scrollFollowersModal($Driver);
             $USERS = $this->collectUsers($Driver);  // Find users that aren't already in array
             if($Driver->getDebug()) 
-                printf("\n\tThere are %d users collected so far.\n\n", count($USERS));
+                printf("%32sthere are %d users collected so far.\n", "", count($USERS));
 
             $this->stuckOnTwelveErrorTest($USERS);
         }

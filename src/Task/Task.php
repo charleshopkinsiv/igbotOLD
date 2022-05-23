@@ -12,42 +12,34 @@ use \IgBot\Account\AccountDriver;
 abstract class Task {
 
     protected $Account;
-    protected $details;
     protected $task_type;
+    protected $val_one;
+    protected $val_two;
+    protected $val_three;
 
-    public function __construct(Account $Account, string $details = "") {
+    
+    public function __construct(Account $Account) {
 
         $this->Account = $Account;
-        if(!empty($details))
-            $this->details = $details;
     }
 
 
-    public function getAccount()
-    {
-
-        return $this->Account;
-    }
+    public function getAccount() { return $this->Account; }
 
 
-    public function getDetails()
-    {
-
-        return $this->details;
-    }
+    public function setValOne(string $val) { $this->val_one = $val; }
+    public function getValOne() { return $this->val_one; }
 
 
-    public function setDetails(string $details)
-    {
+    public function setValTwo(string $val) { $this->val_two = $val; }
+    public function getValTwo() { return $this->val_two; }
 
-        $this->details = $details;
-    }
 
-    public function getTaskType()
-    {
+    public function setValThree(string $val) { $this->val_three = $val; }
+    public function getValThree() { return $this->val_three; }
 
-        return $this->task_type;
-    }
+
+    public function getTaskType() { return $this->task_type; }
 
 
     public abstract function execute(AccountDriver $Driver);

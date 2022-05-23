@@ -7,6 +7,7 @@ use \IgBot\Account\AccountMapper;
 use \IgBot\ActionManager;
 use \IgBot\User\IgUserManager;
 use \IgBot\Task\TaskManager;
+use CharlesHopkinsIV\Core\Registry;
 
 
 class SequenceManager
@@ -29,16 +30,24 @@ class SequenceManager
     public function populateQueue(QueueManager $Queue_Manager)
     {
         
-        foreach($this->Mapper->fetchAll() as $Sequence)
+        foreach($this->Mapper->fetchAll() as $Sequence) {
+
+            if($Sequence->getStatus() == "Inactive") {
+
+                continue;
+            }
+
             foreach($Sequence->getTasksDue() as $Task) {
 
                 if(! $Queue_Manager->alreadyAdded($Task)
                 && ! TaskManager::taskOnLog($Task)) {
 
                     $Queue_Manager->addTask($Task);
-                    if(!empty(CLI)) printf("\t\tAdding %s - %s to %s's queue\n\n", $Task->getTitle(), $Task->getDetails(), $Sequence->getAccount()->getUsername());
+                    if(!empty(Registry::getDebug())) 
+                        printf("%-'.32s\033[32m Adding %s - %s to %s's queue\033[39m\n", date("Y-m-d H:i:s"), $Task->getTitle(), $Task->getDetails(), $Sequence->getAccount()->getUsername());
                 }
             }
+        }
     }
 
 
@@ -117,9 +126,9 @@ class SequenceManager
     public function deleteRoutineHttp()
     {
         
-        if(!empty(\core\Registry::instance()->getRequest()->getProperty("patharg")[0])
-        && is_numeric(\core\Registry::instance()->getRequest()->getProperty("patharg")[0]))
-            $this->Mapper->deleteById(\core\Registry::instance()->getRequest()->getProperty("patharg")[0]);
+        if(!empty(Registry::instance()->getRequest()->getProperty("patharg")[0])
+        && is_numeric(Registry::instance()->getRequest()->getProperty("patharg")[0]))
+            $this->Mapper->deleteById(Registry::instance()->getRequest()->getProperty("patharg")[0]);
     }
 
 
@@ -174,8 +183,13 @@ class SequenceManager
 
         $UserManager = new IgUserManager();
 
-        foreach($DATA['USERS'] as $username) 
-            $Sequence->addUser($UserManager->getByUsername($username));
+        foreach($DATA['USERS'] as $username) {
+
+            if($user = $UserManager->getByUsername($username)) {
+
+                $Sequence->addUser($user);       
+            }
+        }
 
         $this->Mapper->update($Sequence);
     }

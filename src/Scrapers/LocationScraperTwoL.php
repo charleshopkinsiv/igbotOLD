@@ -9,6 +9,10 @@ use Facebook\WebDriver\Interactions\WebDriverActions;
 use \IgBot\Account\AccountDriver;
 use \IgBot\User\IgUserManager;
 use \IgBot\User\IgUser;
+use \IgBot\Task\TaskManager;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 
 class LocationScraperTwoL extends Scraper {
 
@@ -37,15 +41,15 @@ class LocationScraperTwoL extends Scraper {
         $this->max_users = self::$max_users_start;
 
 
-        // Load Users Page
         $Driver->get($url);
         if($Driver->getDebug()) 
-            printf("\n\tLoading %s\n\n", $url);
+            printf("%32sLoading %s\n", "", $url);
 
-        // Open followers modal
+        $Driver->getLimiter()->increment();
+
         $Driver->waitUntilCssSelector(self::$users_css);
         if($Driver->getDebug())
-            printf("\n\t%s Location loaded.\n\n", $location);
+            printf("%32s%s Location loaded.\n", "", $location);
 
 
         $this->collectUsers($Driver);
@@ -61,7 +65,7 @@ class LocationScraperTwoL extends Scraper {
             $this->scrollFollowersModal($Driver);
             $this->collectUsers($Driver);
             if($Driver->getDebug()) 
-                printf("\n\tThere are %d users collected so far.\n\n", count($this->USERS));
+                printf("%32sThere are %d users collected so far.\n", "", count($this->USERS));
         }
 
         // Process Users
@@ -194,6 +198,13 @@ class LocationScraperTwoL extends Scraper {
             }
 
             catch(\Exception $e) {
+
+                $id = md5(strtotime("now"));
+                printf("%-'.32s\033[31mError: %s - %s - %s\033[39m\n", date("Y-m-d H:i:s"), $id, $user->getUsername(), $e->getMessage());
+                $log = new Logger("task");
+                $log->pushHandler(new StreamHandler(TaskManager::$log_file), Logger::ERROR);
+                $log->error($id . " - " . $user->getUsername() . " - " . $e->getMessage() . " " . $e->getFile() . " " . $e->getLine());
+                $this->Driver->screenshot($id);
 
                 if($error_count >= 5)
                     throw new \Exception("Max errors while going on second layer for LocationScraperTwoL.");

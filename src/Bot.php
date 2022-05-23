@@ -9,52 +9,61 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use \IgBot\Queue\QueueManager;
+use \IgBot\Task\TaskManager;
 use \CharlesHopkinsIV\Core\Registry;
 use \CharlesHopkinsIV\Core\Requests\CliRequest;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 
 class Bot {
 
     private $QueueManager;
-
     private $keep_running = true;
+    private int $sleep_time;
+    private bool $debug;
 
     public function __construct() {
 
-        $this->QueueManager = new QueueManager();
+        $this->QueueManager     = new QueueManager();
+        $this->sleep_time       = 60;
+        $this->debug            = true;
+        Registry::setDebug($this->debug);
     }
 
 
-    /**
-     * Run
-     * This method will handle adding items to the queue, and handling current items
-     * 
-     */
     public function run()
     {
 
         try {
                     
-            if(Registry::instance()->getRequest() instanceof CliRequest)
-                define("CLI", true);
-            else define("CLI", false);
+            // if(Registry::instance()->getRequest() instanceof CliRequest)
+            //     define("CLI", true);
+            // else define("CLI", false);
 
             while($this->keep_running) {
 
-                if(!empty(CLI)) printf("\tPopulating queue. . .\n\n");
+                if(isset($this->debug)) 
+                    printf("%-'.32s\033[34mPopulating queue\033[39m\n", date("Y-m-d H:i:s"));
                 $this->QueueManager->populateQueue();
 
-                if(!empty(CLI)) printf("\tHandling tasks. . .\n\n");
+                if(isset($this->debug)) 
+                    printf("%-'.32s\033[34mHandling tasks\033[39m\n", date("Y-m-d H:i:s"));
                 $this->QueueManager->handleAccountTasks();
                 
-                $sleep_time = mt_rand(60, 300);
-                if(!empty(CLI)) printf("\tSleeping for %s seconds\n\n", $sleep_time);
-                sleep($sleep_time);
+                if(isset($this->debug)) 
+                    printf("%-'.32s\033[94mSleeping for %s seconds\033[39m\n", date("Y-m-d H:i:s"), $this->sleep_time);
+
+                sleep($this->sleep_time);
             }
         }
         catch(\Exception $e) { // Fatal errors
 
-            printf("\n\t%s\n\t%s\n\t%s\n\t%s\n", $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
+            $id = md5(strtotime("now"));
+            printf("%-'.32s\033[31mError: %s - %s\033[39m\n", date("Y-m-d H:i:s"), $id, $e->getMessage() . $e->getFile() . $e->getLine() . $e->getTraceAsString());
+            $log = new Logger("task");
+            $log->pushHandler(new StreamHandler(TaskManager::$log_file), Logger::ERROR);
+            $log->error($id . " - " . $e->getMessage() . " " . $e->getFile() . " " . $e->getLine());
         }
     }
 }

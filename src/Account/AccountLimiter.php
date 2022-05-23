@@ -35,7 +35,7 @@ class AccountLimiter
 
     private static array $limits = [
         "view" => [
-            "daily" => 200,
+            "daily" => 100,
             "hourly" => 30
         ],
         "message" => [

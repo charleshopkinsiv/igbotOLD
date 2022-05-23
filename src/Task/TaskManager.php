@@ -1,12 +1,11 @@
 <?php
-
-
-
-
 namespace IgBot\Task;
 use \IgBot\Account\AccountDriver;
 use \IgBot\Account\AccountLimiter;
-
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use IgBot\Exceptions\BadUserException;
+use IgBot\User\IgUserMapper;
 
 class TaskManager
 {
@@ -17,6 +16,7 @@ class TaskManager
         "Scrape" => "\\IgBot\\Scrapers\\ScraperManager",
     ];
 
+    public static $log_file = __DIR__ . "/../../../../../data/logs/errors.log";
 
     public static function handleTask(Task $Task, AccountDriver $Driver)
     {
@@ -28,10 +28,10 @@ class TaskManager
                 return false;
 
             if(!empty($Driver->getDebug()))  
-                printf("\tLeft for day: %s | Left for hour: %s\n\n", $Driver->getLimiter()->leftForDay($Task), $Driver->getLimiter()->leftForHour($Task));
+                printf("%-'.32s\033[33m%s Left for day: %s | Left for hour: %s\033[39m\n", date("Y-m-d H:i:s"), $Driver->getLimiter()->getLimitType($Task), $Driver->getLimiter()->leftForDay($Task), $Driver->getLimiter()->leftForHour($Task));
 
             if(!empty($Driver->getDebug())) 
-                printf("\tHandling Task: %s - %s\n\n", $Task->getTaskType(), $Task->getDetails());
+                printf("%-'.32s\033[32mHandling Task: %s - %s\033[39m\n", date("Y-m-d H:i:s"), $Task->getTaskType(), $Task->getDetails());
 
             $Driver->checkLogin();
 
@@ -41,10 +41,33 @@ class TaskManager
             return true;
         }
 
-        catch(\Throwable $e) {
+        catch(LoginException $e) {
 
             throw $e;
         }
+
+        catch(BadUserException $e) {
+
+            $mapper = new IgUserMapper();
+            if($user = $mapper->getByUsername($Task->getDetails())) {
+
+                $mapper->remove($user);
+            }
+
+            return true;
+        }
+
+        //  CATCH DRIVER SERVER HAS DIED AND RESTART DRIVER
+
+        // catch(\Throwable $e) {
+
+        //     $id = md5(strtotime("now"));
+        //     printf("%-'.32s\033[31mError: %s - %s - %s - %s\033[39m\n", date("Y-m-d H:i:s"), $id, $Task->getTaskType(), $Task->getDetails(), $e->getMessage());
+        //     $log = new Logger("task");
+        //     $log->pushHandler(new StreamHandler(self::$log_file), Logger::ERROR);
+        //     $log->error($id . " - " . $Task->getTaskType() . " " . $Task->getDetails() . " - " . $e->getMessage() . " " . $e->getFile() . " " . $e->getLine());
+        //     $Driver->screenshot($id);
+        // }
     }
 
 

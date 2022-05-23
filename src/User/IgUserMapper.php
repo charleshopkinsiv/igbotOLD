@@ -42,6 +42,14 @@ class IgUserMapper extends Mapper
     }
 
 
+    public function remove(IgUser $user)
+    {
+
+        $sql = "DELETE FROM " . $this->table . " WHERE username = '" . $user->getUsername() . "'";
+        $this->db->query($sql)->execute();
+    }
+
+
     private function loadUsersArray() : array
     {
 

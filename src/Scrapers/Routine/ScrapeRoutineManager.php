@@ -1,12 +1,10 @@
 <?php
 
-
-
 namespace IgBot\Scrapers\Routine;
 
 use \IgBot\Task\TaskManager;
 use \IgBot\Queue\QueueManager;
-
+use \CharlesHopkinsIV\Core\Registry;
 
 class ScrapeRoutineManager
 {
@@ -126,7 +124,7 @@ class ScrapeRoutineManager
                 continue;
 
             $Queue_Manager->addTask($Routine->getTask());
-            if(!empty(CLI)) printf("Adding %s to %s's queue\n\n", get_class($Routine->getTask()), $Routine->getTask()->getAccount()->getUsername());
+            if(!empty(Registry::getDebug())) printf("%-'.32s\032[32mAdding %s to %s's queue\033[39m\n", date("Y-m-d H:i:s"), get_class($Routine->getTask()), $Routine->getTask()->getAccount()->getUsername());
         }
     }
 }

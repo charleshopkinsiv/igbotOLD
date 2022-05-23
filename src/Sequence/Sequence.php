@@ -15,11 +15,10 @@ class Sequence
     private int $id;
     private Account $Account;
     private string $status;
-
-    
     private $ACTIONS;
     private $USERS;
 
+    
     public function __construct(int $id, Account $Account)
     {
 
@@ -31,25 +30,11 @@ class Sequence
     }
 
 
-    public function getId()
-    {
-
-        return $this->id;
-    }
+    public function getId() { return $this->id; }
 
 
-    public function setAccount(Account $account)
-    {
-
-        $this->Account = $account;
-    }
-
-
-    public function getAccount()
-    {
-
-        return $this->Account;
-    }
+    public function setAccount(Account $account) { $this->Account = $account; }
+    public function getAccount() { return $this->Account; }
 
 
     public function setStatus(string $status)
@@ -62,18 +47,7 @@ class Sequence
     }
 
 
-    public function getStatus()
-    {
-
-        return $this->status;
-    }
-
-
-    public function getActionCount() : int
-    {
-
-        return count($this->ACTIONS);
-    }
+    public function getStatus() { return $this->status; }
 
 
     public function getDuration() : int
@@ -144,11 +118,7 @@ class Sequence
     }
 
 
-    public function getUsers() : array
-    {
-
-        return $this->USERS;
-    }
+    public function getUsers() : array { return $this->USERS; }
 
     
     public function addAction(int $days_from_signup, Action $Action) 
@@ -158,6 +128,7 @@ class Sequence
         ksort($this->ACTIONS);
     }
 
+
     public function addActionIfNotAlready(int $days_from_signup, Action $Action) 
     {
 
@@ -166,6 +137,7 @@ class Sequence
             $this->addAction($days_from_signup, $Action);
         }
     }
+
 
     public function checkAction(int $days_from_signup, Action $Action)
     {
@@ -183,15 +155,15 @@ class Sequence
         }
     }
 
-    public function clearActions()
-    {
 
-        $this->ACTIONS = [];
-    }
+    public function getActions() : array { return $this->ACTIONS; }
 
-    public function getActionsByDays()
-    {
 
-        return $this->ACTIONS;
-    }
+    public function getActionCount() : int { return count($this->ACTIONS); }
+
+
+    public function clearActions() { $this->ACTIONS = []; }
+
+
+    public function getActionsByDays() { return $this->ACTIONS; }
 }

@@ -3,7 +3,7 @@
 namespace IgBot\Exceptions;
 
 
-class LoginException extends \Exception
+class BadUserException extends \Exception
 {
 
 

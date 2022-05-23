@@ -28,6 +28,7 @@ class AccountDriver
     private string  $home_url;
     private bool    $debug;
     private array   $failed_tasks;
+    private array   $cookies;
 
     private Account         $Account;
     private ChromeDriver    $WebDriver;
@@ -45,6 +46,7 @@ class AccountDriver
         $this->home_url                 = self::$default_home_url;
         $this->debug                    = true;
         $this->failed_tasks             = [];
+        $this->cookies                  = [];
 
         // Check to see if valid past driver was stored
         $this->data_file = self::$data_folder . "/account_drivers/" . md5($Account->getUsername());
@@ -103,12 +105,62 @@ class AccountDriver
     }
 
 
+    public function getCookieFileLoc() : string
+    {
+
+        return __DIR__ . "/../../data/account_cookies/" . md5($this->getAccount()->getUsername());
+    }
+
+    public function loadCookies() : bool
+    {
+
+        if(empty($this->cookies)
+        && is_file($this->getCookieFileLoc())) {
+
+            $this->cookies = unserialize(
+                file_get_contents($this->getCookieFileLoc())
+            );
+
+        }
+
+        if(!empty($this->cookies)) {
+
+            foreach($this->cookies as $cookie) {
+
+                if(substr($cookie->getDomain(), 0, 1) == ".") // Throws error when period on beginning of domain
+                    $cookie->setDomain(substr($cookie->getDomain(), 1, strlen($cookie->getDomain()) - 1));
+
+                $this->webDriver()->manage()->addCookie($cookie);
+            }
+            return true;
+        }
+        
+        return false;
+    }
+
+
+    public function saveCookies()
+    {
+
+        $this->cookies = [];
+        $this->cookies = $this->webDriver()->manage()->getCookies();
+        file_put_contents(
+            $this->getCookieFileLoc(),
+            serialize($this->cookies)
+        );
+    }
+
+
     public function checkLogin() // Will attempt to log in x # of times
     {
         
         while(!AccountDriverUtil::checkLogin($this)) {
-            if(!empty($this->getDebug())) printf("\tLogging in\n\n");
-            AccountDriverUtil::login($this);
+            if(!empty($this->getDebug())) 
+                printf("%32sLogging in : %s\n", "", $this->Account->getUsername());
+                
+            
+            if(!AccountDriverUtil::cookieLogin($this))
+                AccountDriverUtil::login($this);
             
             if(empty($counter)) $counter =  1; 
             else $counter++;
@@ -164,14 +216,12 @@ class AccountDriver
         try{
 
             $this->webDriver()->wait($time)->until(
-                WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector($css_selector))
+                WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector($css_selector))
             );        
         }
         catch(\Exception $e) {
             
-            echo "\tTitle = " . $this->webDriver()->getTitle() . "\n\n" . $e->getMessage() . "\n\n";
-            $this->screenshot();
-            throw new \Exception($e->getMessage());
+            throw new \Exception("Css selector not found: " . $css_selector . " - \t" . $e->getMessage());
         }
     }
 
@@ -182,14 +232,12 @@ class AccountDriver
         try{
 
             $this->webDriver()->wait()->until(
-                WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::xpath($xpath))
+                WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::xpath($xpath))
             );        
         }
         catch(\Exception $e) {
 
-            echo "\tTitle = " . $this->webDriver()->getTitle() . "\n\n" . $e->getMessage() . "\n\n";
-            $this->screenshot();
-            throw new \Exception($e->getMessage());
+            throw new \Exception("Xpath not found " . $xpath . " " . $e->getMessage());
         }
     }
 
@@ -230,10 +278,7 @@ class AccountDriver
             }
         }
 
-        else {
-
-            return false;
-        }
+        return false;
     }
 }
 

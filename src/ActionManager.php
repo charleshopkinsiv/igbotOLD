@@ -55,4 +55,3 @@ class ActionManager
                 return $Action;
     }
 }
-

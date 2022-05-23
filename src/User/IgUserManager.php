@@ -19,34 +19,42 @@ class IgUserManager
         ],
     ];
 
+
     private IgUserMapper $mapper;
 
-    public function __construct() 
-    {
 
-        $this->mapper = new IgUserMapper();
+    public function __construct() 
+    { 
+
+        $this->mapper = new IgUserMapper(); 
     }
 
 
     public function saveUser(IgUser $User, $source = "")
     {
 
-        if($this->getByUsername($User->getUsername())) {
-
+        if($this->getByUsername($User->getUsername()))
             return;
-        }
 
         $this->mapper->setSource($source);
         $this->mapper->insert($User);
     }
 
+
     public function saveUserImage(string $username, string $img_location)
     {
 
-        $img_binary = file_get_contents($img_location);
+        try {
+    
+            $img_binary = @file_get_contents($img_location);
+            $this->mapper->saveUserImage($username, $img_binary);
+        }
+        catch(\Throwable $e) {
 
-        $this->mapper->saveUserImage($username, $img_binary);
+            throw new \Exception("User image not downloaded");
+        }
     }
+
 
     public function loadCatalog(Ui $Ui) : Catalog
     {
@@ -65,11 +73,7 @@ class IgUserManager
     }
 
 
-    public function getByUsername(string $username)
-    {
-
-        return $this->mapper->getByUsername($username);
-    }
+    public function getByUsername(string $username) { return $this->mapper->getByUsername($username); }
 
 
     public function getUsersUi(Ui $Ui) : IgUserCollection

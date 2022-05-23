@@ -40,6 +40,8 @@ class LocationScraper extends Scraper {
         if($Driver->getDebug()) 
             printf("\n\tLoading %s\n\n", $url);
 
+        $Driver->getLimiter()->increment();
+
         // Open followers modal
         $Driver->waitUntilCssSelector(self::$users_css);
         if($Driver->getDebug())
