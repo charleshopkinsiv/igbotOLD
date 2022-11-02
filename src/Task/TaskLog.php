@@ -38,10 +38,10 @@ class TaskLog
         $sql = "INSERT INTO task_log 
                 SET account = '" . $task->getAccount()->getUsername() . "', 
                     type = '" . $task->getTaskType() . "',
-                    details = '" . $task->getDetails() . "'";
+                    details = '" . $task->getValOne() . "'";
 
         if($task->getTaskType() == "Action")
-            $sql .= ", details_two = '" . $task->getTitle() . "'";
+            $sql .= ", details_two = '" . $task->getValTwo() . "'";
 
         $this->db->query($sql)->execute();
     }
@@ -56,11 +56,11 @@ class TaskLog
         $sql = "SELECT * FROM task_log 
                 WHERE account = '" . $task->getAccount()->getUsername() . "'  
                     AND type = '" . $task->getTaskType() . "' 
-                    AND details = '" . $task->getDetails() . "' 
+                    AND details = '" . $task->getValOne() . "' 
                     AND datetime >= DATE(DATE_SUB(NOW(), INTERVAL " . $days_back . " DAY))";
 
         if($task->getTaskType() == "Action")
-            $sql .= " AND details_two = '" . $task->getTitle() . "'";
+            $sql .= " AND details_two = '" . $task->getValTwo() . "'";
 
         return $this->db->query($sql)->single();
     }

@@ -40,7 +40,7 @@ class ActionManager
 
         $USER_ACTIONS = [];
         foreach($this->getAllActions() as $Action)
-            if(!in_array($Action->getTitle(), self::$NON_USER_ACTIONS))
+            if(!in_array($Action->getValOne(), self::$NON_USER_ACTIONS))
                 $USER_ACTIONS[] = $Action;
 
         return $USER_ACTIONS;
@@ -51,7 +51,7 @@ class ActionManager
     {
 
         foreach($this->getAllActions() as $Action)
-            if($Action->getTitle() == $title)
+            if($Action->getValOne() == $title)
                 return $Action;
     }
 }

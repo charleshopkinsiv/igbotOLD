@@ -28,8 +28,8 @@ class Follow extends Action
         
         try {
 
-            $Driver->waitUntilCssSelector(self::$follow_css_selector, 10);
-            $Driver->click(self::$follow_css_selector);   
+            $Driver->waitUntilCssSelector(self::$follow_btn_css_selector, 10);
+            $Driver->click(self::$follow_btn_css_selector);   
         }
 
         catch(\Exception $e) {

@@ -28,6 +28,11 @@ abstract class Action extends Task {
     public function addUser(IgUser $User) { $this->User = $User; }
     public function getUser() { return $this->User; }
 
+    public function getValOne() { return $this->action_title; }
+    public function getValTwo() { return $this->action_description; }
+
+    // public function getTitle()          { return $this->action_title; }
+    // public function getDescription()    { return $this->action_description; }
 
     public function requiresExtraInfo() : bool { return $this->requires_extra_info; }
 

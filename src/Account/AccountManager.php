@@ -3,7 +3,8 @@
 
 namespace IgBot\Account;
 
-use \IgBot\MapperFactory;
+use IgBot\MapperFactory;
+use CharlesHopkinsIV\Core\Registry;
 
 
 class AccountManager
@@ -69,8 +70,8 @@ class AccountManager
     public function deleteAccountHttp()
     {
         
-        if(!empty(\core\Registry::instance()->getRequest()->getProperty("patharg")[0]))
-            $this->mapper->deleteByUsername(\core\Registry::instance()->getRequest()->getProperty("patharg")[0]);
+        if(!empty(Registry::instance()->getRequest()->getProperty("patharg")[0]))
+            $this->mapper->deleteByUsername(Registry::instance()->getRequest()->getProperty("patharg")[0]);
     }
 
 
